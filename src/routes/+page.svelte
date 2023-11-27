@@ -25,7 +25,7 @@
 </svelte:head>
 
 <div class="flex flex-col items-center gap-8 max-w-lg w-full mx-auto px-8">
-	<h1 class="text-6xl font-medium mt-40">Mangasss</h1>
+	<h1 class="text-5xl lg:text-6xl font-medium mt-40">Mangasss</h1>
 	<p class="text-center">Here you'll find whatever fuckin manga you wanna read (maybe).</p>
 
 	<form id="search-form" class="w-full" method="post">

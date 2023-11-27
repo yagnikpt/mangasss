@@ -7,6 +7,6 @@ export const load: PageLoad = async ({ params, url }) => {
   const currentChpIndex = chapters.findIndex((chapter: any) => chapter.id === `${params.manga}/${params.chapter}`)
   return {
     data: data || [],
-    next: chapters[currentChpIndex - 1] ? chapters[currentChpIndex - 1].id : null
+    next: chapters[currentChpIndex - 1] ? chapters[currentChpIndex - 1] : null
   }
 };

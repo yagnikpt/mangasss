@@ -35,12 +35,6 @@ export default defineConfig({
 				},
 			],
 		},
-		injectManifest: {
-			globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2}']
-		},
-		workbox: {
-			globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2}']
-		},
 		devOptions: {
 			enabled: true,
 			suppressWarnings: process.env.SUPPRESS_WARNING === 'true',

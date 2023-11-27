@@ -8,7 +8,7 @@
 
 	let currentPage = 1;
 	let showToolbar = true;
-	let timeoutId: number;
+	let timeoutId: NodeJS.Timeout;
 
 	let previousPage: string = base;
 	afterNavigate(({ from }) => {
@@ -86,13 +86,13 @@
 			<a
 				data-sveltekit-reload
 				href={`/${data.next.id}`}
-				class="block py-2 px-4 bg-neutral-900 rounded-md">Read next chapter</a
+				class="block py-2 px-4 bg-neutral-800 rounded-md">Read next chapter</a
 			>
 		</div>
 	{:else}
 		<div class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center">
 			<p>That was the latest chapter.</p>
-			<a data-sveltekit-reload href={`/`} class="block py-2 px-4 bg-neutral-900 rounded-md">Home</a>
+			<a data-sveltekit-reload href={`/`} class="block py-2 px-4 bg-neutral-800 rounded-md">Home</a>
 		</div>
 	{/if}
 </div>

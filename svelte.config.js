@@ -14,6 +14,9 @@ const config = {
 		adapter: adapter(),
 		alias: {
 			$: 'src'
+		},
+		serviceWorker: {
+			register: false
 		}
 	}
 };

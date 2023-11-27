@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.title || 'Manga Details'}</title>
+	<title>{data.title.english ? data.title.english : data.title.romaji || 'Manga Details'}</title>
 	<meta name="description" content={`This page shows details of ${data.title || ''} manga.`} />
 </svelte:head>
 <section class="py-20 px-8 lg:px-40">
@@ -13,7 +13,7 @@
 		<img
 			class="w-40 lg:w-60 object-cover aspect-[11/16] rounded"
 			src={data.image}
-			alt={data.title}
+			alt={data.title.english ? data.title.english : data.title.romaji}
 		/>
 		<div class="space-y-4">
 			<h1 class="text-3xl lg:text-4xl font-semibold">

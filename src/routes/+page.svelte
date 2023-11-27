@@ -21,7 +21,7 @@
 
 <svelte:head>
 	<title>Mangasss</title>
-	<meta name="description" content="Svelte demo app" />
+	<meta name="description" content="Here you'll find whatever fuckin manga you wanna read (maybe)." />
 </svelte:head>
 
 <div class="flex flex-col items-center gap-8 max-w-lg w-full mx-auto px-8">
@@ -30,7 +30,6 @@
 
 	<form id="search-form" class="w-full" method="post">
 		<Input
-			on:change={() => console.log('khjkh')}
 			on:keydown={keydown}
 			name="search"
 			placeholder="Type a manga to search..."

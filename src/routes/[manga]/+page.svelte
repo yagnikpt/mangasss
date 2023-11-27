@@ -24,7 +24,7 @@
 	<h2 class="text-3xl mt-12">Chapters</h2>
 	<div class="grid grid-cols-4 gap-x-10 gap-y-4 mt-6">
 		{#each data.chapters as chapter, index}
-			<a href={`/${data.id}/${chapter.id}`} class="block py-3 px-4 bg-neutral-800"
+			<a href={`/${chapter.id}`} class="block py-3 px-4 bg-neutral-800"
 				>{index + 1}. {chapter.title}</a
 			>
 		{/each}

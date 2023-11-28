@@ -72,11 +72,16 @@
 			data-page={index + 1}
 			class="shrink-0 flex justify-center w-screen h-[100dvh] lg:h-[90dvh] child items-center relative page"
 		>
-			<div class="flex"></div>
+			<div
+				class="w-12 h-12 border-4 lg:border-[6px] border-neutral-500 rounded-full border-t-current animate-spin text-neutral-950 absolute z-[-1]"
+			></div>
 			<img
 				class="lg:h-[90dvh] lg:w-auto w-screen h-auto"
-				src={`https://m3u8-proxy-cors-alpha-two.vercel.app/cors?url=${chapter.img}&headers={"referer":"${chapter.headerForImage.Referer}"}`}
-				alt={chapter.title}
+				src={`https://m3u8-proxy-cors-alpha-two.vercel.app/cors?url=${chapter.img}&headers={"referer":"https://mangadex.org"}`}
+				alt={chapter.page}
+				on:error={(e) => {
+					e.currentTarget.src = `https://m3u8-proxy-cors-alpha-two.vercel.app/cors?url=${chapter.img}&headers={"referer":"https://mangadex.org"}`;
+				}}
 			/>
 		</div>
 	{/each}
@@ -85,7 +90,7 @@
 			<p>{data.next.title}</p>
 			<a
 				data-sveltekit-reload
-				href={`/${data.next.id}`}
+				href={`/${data.mangaId}/${data.next.id}`}
 				class="block py-2 px-4 bg-neutral-800 rounded-md">Read next chapter</a
 			>
 		</div>

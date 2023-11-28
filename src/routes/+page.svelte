@@ -21,7 +21,10 @@
 
 <svelte:head>
 	<title>Mangasss</title>
-	<meta name="description" content="Here you'll find whatever fuckin manga you wanna read (maybe)." />
+	<meta
+		name="description"
+		content="Here you'll find whatever fuckin manga you wanna read (maybe)."
+	/>
 </svelte:head>
 
 <div class="flex flex-col items-center gap-8 max-w-lg w-full mx-auto px-8">
@@ -34,6 +37,7 @@
 			name="search"
 			placeholder="Type a manga to search..."
 			type="search"
+			required
 		/>
 	</form>
 

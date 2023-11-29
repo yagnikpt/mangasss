@@ -2,7 +2,7 @@
 	import { providers } from '$/lib';
 	import type { PageData } from './$types';
 	export let data: PageData;
-	const providersIds = providers.map((p) => p.value).filter((p) => p !== data.provider);
+	$: providersIds = providers.map((p) => p.value).filter((p) => p !== data.provider);
 </script>
 
 <svelte:head>
@@ -44,7 +44,7 @@
 		<div class="flex gap-3 mt-4">
 			{#each providersIds as provider}
 				<a
-					data-sveltekit-reload
+					data-sveltekit-replacestate
 					class="block px-4 py-2 bg-neutral-800 rounded-md"
 					href={`/${provider}/${data.id}`}>{provider.charAt(0).toUpperCase() + provider.slice(1)}</a
 				>
@@ -68,7 +68,7 @@
 			<div class="flex gap-3">
 				{#each providersIds as provider}
 					<a
-						data-sveltekit-reload
+						data-sveltekit-replacestate
 						class="block px-4 py-2 bg-neutral-800 rounded-md"
 						href={`/${provider}/${data.id}`}
 						>{provider.charAt(0).toUpperCase() + provider.slice(1)}</a

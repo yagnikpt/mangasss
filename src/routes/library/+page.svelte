@@ -11,15 +11,20 @@
 	function handleRemove(index: number) {
 		reads.splice(index, 1);
 		localStorage.setItem('reads', JSON.stringify(reads));
+		location.reload();
 	}
 </script>
 
+<svelte:head>
+	<title>Library</title>
+	<meta name="description" content="Continue reading from where you left." />
+</svelte:head>
+
 <section class="py-20 px-8 lg:px-40">
-	<h1 class="text-2xl lg:text-3xl">Continue reading where you left.</h1>
+	<h1 class="text-2xl lg:text-3xl">Continue from where you left.</h1>
 	<div class="grid grid-cols-1 lg:grid-cols-5 gap-5 mt-10">
 		{#each reads as read, index}
 			{#await axios.get(`https://manga-server.vercel.app/meta/anilist-manga/info/${read.id}?provider=${read.provider}`)}
-				<!-- promise is pending -->
 				<div class="w-full h-80 flex justify-center items-center bg-neutral-900">
 					<div
 						class="w-8 h-8 border-4 border-neutral-500 rounded-full border-t-current animate-spin text-neutral-900 absolute"
@@ -36,7 +41,7 @@
 						{value.data.title.english ? value.data.title.english : value.data.title.romaji}
 					</p>
 					<a
-						href={`/${read.provider}/${read.id}/${read.chapter}`}
+						href={`/${read.provider}/${read.id}/${read.chapter}#page-${read.page}`}
 						class="block text-center bg-neutral-200 text-neutral-800 p-2 rounded-md"
 					>
 						Read
@@ -48,6 +53,8 @@
 			{:catch error}
 				<p>Something went wrong: {error.message}</p>
 			{/await}
+		{:else}
+			<p>Nothing to show! Start reading right now.</p>
 		{/each}
 	</div>
 </section>

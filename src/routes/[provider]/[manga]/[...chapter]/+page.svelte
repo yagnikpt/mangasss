@@ -1,9 +1,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { X, MoveLeft, MoveRight } from 'lucide-svelte';
-	import { goto } from '$app/navigation';
+	import {
+		X,
+		MoveLeft,
+		MoveRight,
+		BookOpenText,
+		GalleryVertical,
+		GalleryHorizontal
+	} from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type { LibraryRead } from '$/lib';
+	import * as Popover from '$lib/components/ui/popover';
+	import { Input } from '$/lib/components/ui/input';
+
 	export let data: PageData;
 
 	const refers: Record<string, string> = {
@@ -15,6 +24,7 @@
 	let currentPage = 1;
 	let showToolbar = true;
 	let timeoutId: NodeJS.Timeout;
+	let mode: 'horizontal' | 'vertical' = 'horizontal';
 
 	function syncToLocal() {
 		const read = {
@@ -32,6 +42,7 @@
 
 	onMount(() => {
 		syncToLocal();
+		mode = (localStorage.getItem('read_mode') as 'horizontal' | 'vertical') ?? 'horizontal';
 		timeoutId = setTimeout(() => (showToolbar = false), 2000);
 		const observer = new IntersectionObserver(
 			(entries) => {
@@ -75,6 +86,12 @@
 		if (e.key === 'ArrowRight') handlePrevPage();
 		if (e.key === 'ArrowLeft') handleNextPage();
 	}
+
+	function pageJump(event: KeyboardEvent & { currentTarget: HTMLInputElement }) {
+		if (event.metaKey) return;
+		if (event.key === 'Enter')
+			document.getElementById(`page-${event.currentTarget.value}`)?.scrollIntoView();
+	}
 </script>
 
 <svelte:head>
@@ -85,27 +102,71 @@
 <svelte:window on:keydown={handleKeyNavigation} />
 
 <div
-	class="max-lg:fixed max-lg:top-0 max-lg:w-full max-lg:py-2 max-lg:px-4 max-lg:justify-between bg-neutral-900 border-b border-neutral-300 flex items-center lg:justify-around lg:h-[5dvh] z-10"
+	class={`max-lg:fixed max-lg:top-0 max-lg:w-full max-lg:py-2 max-lg:px-4 max-lg:justify-between bg-neutral-900 border-b border-neutral-300 flex items-center lg:justify-around lg:h-[5dvh] z-10 ${
+		mode === 'vertical' ? 'fixed top-0 w-full py-2 px-4' : ''
+	}`}
 	class:max-lg:hidden={!showToolbar}
 >
 	<span>{currentPage}/{data.data.length}</span>
-	<button
-		on:click={() => goto(`/${data.provider}/${data.mangaId}`, { replaceState: true })}
-		aria-label="Close"
-		class="p-2"
-	>
-		<X />
-	</button>
+	<div class="flex items-center gap-2">
+		<Popover.Root positioning={{ placement: 'bottom-end' }}>
+			<Popover.Trigger class="p-2">
+				<BookOpenText />
+			</Popover.Trigger>
+			<Popover.Content class="w-60 space-y-4">
+				<span>Jump to a page</span>
+				<Input on:keydown={pageJump} class="p-2" min={1} max={data.data.length} type="number" />
+			</Popover.Content>
+		</Popover.Root>
+		{#if mode === 'vertical'}
+			<button
+				on:click={() => {
+					mode = 'horizontal';
+					localStorage.setItem('read_mode', 'horizontal');
+				}}
+				aria-label="Read horizontal"
+				class="p-2"
+			>
+				<GalleryHorizontal />
+			</button>
+		{:else}
+			<button
+				on:click={() => {
+					mode = 'vertical';
+					localStorage.setItem('read_mode', 'vertical');
+				}}
+				class="p-2"
+				aria-label="Read verticle"
+			>
+				<GalleryVertical />
+			</button>
+		{/if}
+		<a
+			href={`/${data.provider}/${data.mangaId}`}
+			data-sveltekit-replacestate
+			aria-label="Close"
+			class="p-2 block"
+		>
+			<X />
+		</a>
+	</div>
 </div>
 <div
-	class="overflow-x-scroll overflow-y-hidden parent flex flex-row-reverse hide-scroll h-[100dvh] lg:h-[90dvh]"
+	class={`flex hide-scroll ${
+		mode === 'horizontal'
+			? 'h-[100dvh] lg:h-[90dvh] overflow-y-hidden overflow-x-scroll parent flex-row-reverse'
+			: 'flex-col overflow-x-hidden mt-20'
+	}`}
 	on:click={handleToolbarToggle}
 	role="presentation"
 >
 	{#each data.data as chapter, index}
 		<div
 			data-page={index + 1}
-			class="shrink-0 flex justify-center w-screen h-[100dvh] lg:h-[90dvh] child items-center relative page"
+			class={`shrink-0 flex justify-center w-screen ${
+				mode === 'horizontal' ? 'h-[100dvh] lg:h-[90dvh]' : ''
+			} child items-center relative page`}
+			id={`page-${index + 1}`}
 		>
 			<div
 				class="w-12 h-12 border-4 lg:border-[6px] border-neutral-500 rounded-full border-t-current animate-spin text-neutral-950 absolute z-[-1]"
@@ -129,11 +190,11 @@
 		<div
 			class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
 		>
-			<p>{data.next.title}</p>
+			<p class="lg:text-lg">{data.next.title}</p>
 			<a
-				data-sveltekit-reload
-				href={`/${data.provider}/${data.mangaId}/${data.next.id}`}
-				class="block py-2 px-4 bg-neutral-800 rounded-md">Read next chapter</a
+				data-sveltekit-replacestate
+				href={`/${data.provider}/${data.mangaId}/${data.next.id}#page-1`}
+				class="block py-2 px-4 lg:text-lg bg-neutral-800 rounded-md">Read next chapter</a
 			>
 		</div>
 	{:else}
@@ -141,13 +202,15 @@
 			class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
 		>
 			<p>That was the latest chapter.</p>
-			<a data-sveltekit-reload href={`/`} class="block py-2 px-4 bg-neutral-800 rounded-md">Home</a>
+			<a data-sveltekit-replacestate href={`/`} class="block py-2 px-4 bg-neutral-800 rounded-md"
+				>Home</a
+			>
 		</div>
 	{/if}
 </div>
 <div
 	class="max-lg:hidden bg-neutral-900 border-t border-neutral-300 flex items-center lg:justify-around lg:h-[5dvh] z-10"
-	class:max-lg:hidden={!showToolbar}
+	class:lg:hidden={mode === 'vertical'}
 >
 	<button on:click={handleNextPage} class="p-2 flex">
 		<MoveLeft class="mr-2" /> Next

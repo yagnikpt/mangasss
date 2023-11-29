@@ -6,7 +6,6 @@
     "@sveltejs/adapter-auto": "^2.0.0",
     "@sveltejs/kit": "^1.27.4",
     "@types/cookie": "^0.5.1",
-    "@types/svelte-range-slider-pips": "^2.0.3",
     "@vite-pwa/sveltekit": "^0.2.8",
     "autoprefixer": "^10.4.14",
     "clsx": "^2.0.0",
@@ -36,7 +35,6 @@
   "dependencies": {
     "axios": "^1.6.2",
     "bits-ui": "^0.9.8",
-    "lucide-svelte": "^0.293.0",
-    "svelte-range-slider-pips": "^2.2.3"
+    "lucide-svelte": "^0.293.0"
   }
 }

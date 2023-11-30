@@ -12,6 +12,7 @@
 	import type { LibraryRead } from '$/lib';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Input } from '$/lib/components/ui/input';
+	import { preloadData } from '$app/navigation';
 
 	export let data: PageData;
 
@@ -22,6 +23,7 @@
 	};
 
 	let currentPage = 1;
+	let popoverOpen = false;
 	let showToolbar = true;
 	let timeoutId: NodeJS.Timeout;
 	let mode: 'horizontal' | 'vertical' = 'horizontal';
@@ -42,6 +44,7 @@
 
 	onMount(() => {
 		syncToLocal();
+		if (data.next) preloadData(`/${data.provider}/${data.mangaId}/${data.next.id}`);
 		mode = (localStorage.getItem('read_mode') as 'horizontal' | 'vertical') ?? 'horizontal';
 		timeoutId = setTimeout(() => (showToolbar = false), 2000);
 		const observer = new IntersectionObserver(
@@ -53,7 +56,7 @@
 					}
 				});
 			},
-			{ threshold: 1 }
+			{ threshold: 0.9 }
 		);
 		const pages = document.querySelectorAll('.page');
 		pages.forEach((page) => {
@@ -64,7 +67,9 @@
 	function handleToolbarToggle() {
 		if (!showToolbar) {
 			showToolbar = true;
-			timeoutId = setTimeout(() => (showToolbar = false), 2000);
+			timeoutId = setTimeout(() => {
+				if (!popoverOpen) showToolbar = false;
+			}, 2000);
 		} else {
 			showToolbar = false;
 			if (timeoutId) clearTimeout(timeoutId);
@@ -109,7 +114,10 @@
 >
 	<span>{currentPage}/{data.data.length}</span>
 	<div class="flex items-center gap-2">
-		<Popover.Root positioning={{ placement: 'bottom-end' }}>
+		<Popover.Root
+			onOpenChange={(state) => (popoverOpen = state)}
+			positioning={{ placement: 'bottom-end' }}
+		>
 			<Popover.Trigger class="p-2">
 				<BookOpenText />
 			</Popover.Trigger>
@@ -192,8 +200,8 @@
 		>
 			<p class="lg:text-lg">{data.next.title}</p>
 			<a
-				data-sveltekit-replacestate
-				href={`/${data.provider}/${data.mangaId}/${data.next.id}#page-1`}
+				data-sveltekit-reload
+				href={`/${data.provider}/${data.mangaId}/${data.next.id}`}
 				class="block py-2 px-4 lg:text-lg bg-neutral-800 rounded-md">Read next chapter</a
 			>
 		</div>

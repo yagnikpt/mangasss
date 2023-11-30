@@ -19,7 +19,9 @@
 
 	let readprovider: string;
 	onMount(() => {
-		readprovider = providers[Number(localStorage.getItem('prefered_provider'))].value;
+		readprovider = localStorage.getItem('prefered_provider')
+			? providers[Number(localStorage.getItem('prefered_provider'))].value
+			: '';
 	});
 </script>
 

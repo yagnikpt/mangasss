@@ -33,6 +33,7 @@
 			id: data.mangaId,
 			provider: data.provider,
 			chapter: data.chapter,
+			chapterTitle: data.chapterTitle ?? '',
 			page: currentPage
 		};
 		const lib: LibraryRead[] = JSON.parse(localStorage.getItem('reads') ?? '[]');

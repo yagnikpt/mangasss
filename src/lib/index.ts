@@ -7,5 +7,6 @@ export interface LibraryRead {
   id: string;
   provider: string;
   chapter: string;
+  chapterTitle: string;
   page: number;
 }

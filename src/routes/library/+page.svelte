@@ -42,9 +42,9 @@
 					</p>
 					<a
 						href={`/${read.provider}/${read.id}/${read.chapter}#page-${read.page}`}
-						class="block text-center bg-neutral-200 text-neutral-800 p-2 rounded-md"
+						class="block text-center bg-neutral-200 text-neutral-800 p-2 rounded-md line-clamp-1 whitespace-nowrap px-5 text-ellipsis font-medium"
 					>
-						Read
+						Read {read.chapterTitle}
 					</a>
 					<button on:click={() => handleRemove(index)} class="bg-red-600 p-2 rounded-md">
 						Remove

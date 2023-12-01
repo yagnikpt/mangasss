@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { X } from 'lucide-svelte';
 	import { providers } from '$/lib';
 	import type { PageData } from './$types';
 	export let data: PageData;
@@ -21,6 +22,9 @@
 	/>
 </svelte:head>
 <section class="py-20 px-8 lg:px-40">
+	<a href="/" class="block p-2 absolute top-4 right-8 lg:right-40">
+		<X class="w-7 h-7" />
+	</a>
 	{#if !data.error}
 		<div class="flex gap-10 lg:gap-16 lg:items-center max-lg:flex-col">
 			<img

@@ -12,7 +12,6 @@
 	import type { LibraryRead } from '$/lib';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Input } from '$/lib/components/ui/input';
-	import { preloadData } from '$app/navigation';
 
 	export let data: PageData;
 
@@ -44,8 +43,7 @@
 	}
 
 	onMount(() => {
-		syncToLocal();
-		if (data.next) preloadData(`/${data.provider}/${data.mangaId}/${data.next.id}`);
+		syncToLocal()
 		mode = (localStorage.getItem('read_mode') as 'horizontal' | 'vertical') ?? 'horizontal';
 		timeoutId = setTimeout(() => (showToolbar = false), 2000);
 		const observer = new IntersectionObserver(

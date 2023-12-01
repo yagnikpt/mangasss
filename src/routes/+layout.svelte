@@ -23,6 +23,7 @@
 </script>
 
 <svelte:head>
+	<meta name="theme-color" content="#171717" />
 	{@html webManifestLink}
 </svelte:head>
 <slot />

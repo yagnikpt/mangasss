@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Input from '$/lib/components/ui/input/input.svelte';
+	import { Skeleton } from '$lib/components/ui/skeleton';
 	import * as Select from '$lib/components/ui/select';
 	import { Github } from 'lucide-svelte';
 	import type { ActionData } from './$types';
@@ -85,14 +86,17 @@
 		<div class="space-y-4 w-full">
 			{#each form.data as item}
 				<a
-					href={`/${readprovider || 'mangadex'}/${item.id}`}
-					class="flex gap-8 hover:bg-neutral-800 rounded-md transition items-center justify-start w-full"
+					href={`/${readprovider || 'mangahere'}/${item.id}`}
+					class="flex w-full pr-4 gap-8 hover:bg-neutral-800 rounded-md transition items-center justify-start"
 				>
-					<img
-						class="w-20 object-cover aspect-[10/16] rounded-md"
-						src={item.image}
-						alt={item.title.english ? item.title.english : item.title.romaji}
-					/>
+					<div class="relative shrink-0">
+						<img
+							class="w-20 aspect-[10/16] object-cover rounded-md"
+							src={item.image}
+							alt={item.title.english ? item.title.english : item.title.romaji}
+						/>
+						<Skeleton class="rounded-md absolute z-[-1] inset-0" />
+					</div>
 					<p class="text-xl font-semibold">
 						{item.title.english ? item.title.english : item.title.romaji}
 					</p>

@@ -25,13 +25,13 @@
 	<div class="grid grid-cols-1 lg:grid-cols-5 gap-5 mt-10">
 		{#each reads as read, index}
 			{#await axios.get(`https://manga-server.vercel.app/meta/anilist-manga/info/${read.id}?provider=${read.provider}`)}
-				<div class="w-full h-80 flex justify-center items-center bg-neutral-900">
+				<div class="w-full h-80 flex justify-center items-center bg-neutral-900 rounded">
 					<div
 						class="w-8 h-8 border-4 border-neutral-500 rounded-full border-t-current animate-spin text-neutral-900 absolute"
 					></div>
 				</div>
 			{:then value}
-				<div class="w-full flex flex-col gap-4 bg-neutral-900 p-4">
+				<div class="w-full flex flex-col gap-4 bg-neutral-900 p-4 rounded">
 					<img
 						class="object-cover aspect-[11/16] rounded"
 						src={value.data.image}

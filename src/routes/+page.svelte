@@ -36,7 +36,7 @@
 	/>
 </svelte:head>
 
-<a href="/library" class="block px-4 py-2 text-sm bg-neutral-800 rounded-md absolute top-5 right-5"
+<a href="/library" class="block px-4 py-2 text-sm bg-neutral-800 rounded-md absolute top-5 right-8"
 	>Library</a
 >
 <div class="flex flex-col items-center gap-8 max-w-lg w-full mx-auto px-8">
@@ -52,7 +52,7 @@
 				: undefined}
 			portal={null}
 		>
-			<Select.Trigger class="w-full">
+			<Select.Trigger aria-label="Select a provider" class="w-full">
 				<Select.Value placeholder="Select a provider" />
 			</Select.Trigger>
 			<Select.Content>
@@ -101,6 +101,8 @@
 						{item.title.english ? item.title.english : item.title.romaji}
 					</p>
 				</a>
+			{:else}
+				<p class="text-center text-lg font-medium">No results found!</p>
 			{/each}
 		</div>
 	{/if}

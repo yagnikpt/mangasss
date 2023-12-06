@@ -35,15 +35,18 @@
 			chapterTitle: data.chapterTitle ?? '',
 			page: currentPage
 		};
-		const lib: LibraryRead[] = JSON.parse(localStorage.getItem('reads') ?? '[]');
+		let lib: LibraryRead[] = JSON.parse(localStorage.getItem('reads') ?? '[]');
 		const currentReadIndex = lib.findIndex((read) => read.id === data.mangaId);
 		if (currentReadIndex === -1) lib.unshift(read);
-		else lib[currentReadIndex] = read;
+		else {
+			lib = lib.filter((manga) => manga.id !== data.mangaId);
+			lib.unshift(read);
+		}
 		localStorage.setItem('reads', JSON.stringify(lib));
 	}
 
 	onMount(() => {
-		syncToLocal()
+		syncToLocal();
 		mode = (localStorage.getItem('read_mode') as 'horizontal' | 'vertical') ?? 'horizontal';
 		timeoutId = setTimeout(() => (showToolbar = false), 2000);
 		const observer = new IntersectionObserver(

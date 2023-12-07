@@ -83,7 +83,7 @@
 	</div>
 
 	{#if form}
-		<div class="space-y-4 w-full">
+		<div class="space-y-4 w-full mb-6">
 			{#each form.data as item}
 				<a
 					href={`/${readprovider || 'mangahere'}/${item.id}`}
@@ -97,9 +97,18 @@
 						/>
 						<Skeleton class="rounded-md absolute z-[-1] inset-0" />
 					</div>
-					<p class="text-xl font-semibold">
-						{item.title.english ? item.title.english : item.title.romaji}
-					</p>
+					<div class="space-y-3">
+						<p class="text-lg lg:text-xl font-semibold line-clamp-3">
+							{item.title.english ? item.title.english : item.title.romaji}
+						</p>
+						<p class="font-medium text-sm text-neutral-400">
+							{item.type === 'MANGA'
+								? 'MANGA / MANHWA'
+								: item.type === 'ONE_SHOT'
+								  ? 'ONE SHOT'
+								  : item.type}
+						</p>
+					</div>
 				</a>
 			{:else}
 				<p class="text-center text-lg font-medium">No results found!</p>

@@ -97,7 +97,7 @@
 						/>
 						<Skeleton class="rounded-md absolute z-[-1] inset-0" />
 					</div>
-					<div class="space-y-3">
+					<div class="space-y-2">
 						<p class="text-lg lg:text-xl font-semibold line-clamp-3">
 							{item.title.english ? item.title.english : item.title.romaji}
 						</p>

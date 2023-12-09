@@ -9,17 +9,11 @@
 		GalleryHorizontal
 	} from 'lucide-svelte';
 	import type { PageData } from './$types';
-	import type { LibraryRead } from '$/lib';
+	import { refers, type LibraryRead } from '$/lib';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Input } from '$/lib/components/ui/input';
 
 	export let data: PageData;
-
-	const refers: Record<string, string> = {
-		mangakakalot: 'https://mangakakalot.com',
-		mangadex: 'https://mangadex.org',
-		mangahere: 'https://www.mangahere.cc'
-	};
 
 	let currentPage = 1;
 	let popoverOpen = false;
@@ -114,7 +108,7 @@
 	}`}
 	class:max-lg:hidden={!showToolbar}
 >
-	<span>{currentPage}/{data.data.length}</span>
+	<span>{currentPage}/{data.pages.length}</span>
 	<div class="flex items-center gap-2">
 		<Popover.Root
 			onOpenChange={(state) => (popoverOpen = state)}
@@ -125,7 +119,7 @@
 			</Popover.Trigger>
 			<Popover.Content class="w-60 space-y-4">
 				<span>Jump to a page</span>
-				<Input on:keydown={pageJump} class="p-2" min={1} max={data.data.length} type="number" />
+				<Input on:keydown={pageJump} class="p-2" min={1} max={data.pages.length} type="number" />
 			</Popover.Content>
 		</Popover.Root>
 		{#if mode === 'vertical'}
@@ -170,7 +164,7 @@
 	on:click={handleToolbarToggle}
 	role="presentation"
 >
-	{#each data.data as chapter, index}
+	{#each data.pages as panel, index}
 		<div
 			data-page={index + 1}
 			class={`shrink-0 flex justify-center w-screen ${
@@ -184,14 +178,18 @@
 			<img
 				class="lg:h-[90dvh] lg:w-auto w-screen h-auto"
 				src={`https://m3u8-proxy-cors-alpha-two.vercel.app/cors?url=${
-					chapter.img
-				}&headers={"referer":"${refers[data.provider]}"}`}
-				alt={chapter.page}
+					panel.img
+				}&headers={"referer":"${
+					panel.headerForImage ? panel.headerForImage.Referer : refers[data.provider]
+				}"}`}
+				alt={panel.page}
 				on:error={(e) => {
 					// @ts-ignore
 					e.currentTarget.src = `https://m3u8-proxy-cors-alpha-two.vercel.app/cors?url=${
-						chapter.img
-					}&headers={"referer":"${refers[data.provider]}"}`;
+						panel.img
+					}&headers={"referer":"${
+						panel.headerForImage ? panel.headerForImage.Referer : refers[data.provider]
+					}"}`;
 				}}
 			/>
 		</div>

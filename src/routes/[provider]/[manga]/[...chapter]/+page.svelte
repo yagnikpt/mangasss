@@ -45,9 +45,13 @@
 		timeoutId = setTimeout(() => (showToolbar = false), 2000);
 		const observer = new IntersectionObserver(
 			(entries) => {
+				// console.clear();
 				entries.forEach((entry) => {
 					if (entry.intersectionRatio > 0 && entry.isIntersecting) {
 						currentPage = Number(entry.target.getAttribute('data-page'));
+						const panels = document.querySelector('.panel__container');
+						panels?.children[currentPage]?.children[1]?.removeAttribute('loading');
+						panels?.children[currentPage + 1]?.children[1]?.removeAttribute('loading');
 						syncToLocal();
 					}
 				});
@@ -110,14 +114,11 @@
 >
 	<span>{currentPage}/{data.pages.length}</span>
 	<div class="flex items-center gap-2">
-		<Popover.Root
-			onOpenChange={(state) => (popoverOpen = state)}
-			positioning={{ placement: 'bottom-end' }}
-		>
+		<Popover.Root onOpenChange={(state) => (popoverOpen = state)}>
 			<Popover.Trigger class="p-2">
 				<BookOpenText />
 			</Popover.Trigger>
-			<Popover.Content class="w-60 space-y-4">
+			<Popover.Content align="end" class="w-60 space-y-4">
 				<span>Jump to a page</span>
 				<Input on:keydown={pageJump} class="p-2" min={1} max={data.pages.length} type="number" />
 			</Popover.Content>
@@ -156,7 +157,7 @@
 	</div>
 </div>
 <div
-	class={`flex hide-scroll ${
+	class={`flex panel__container hide-scroll ${
 		mode === 'horizontal'
 			? 'h-[100dvh] lg:h-[90dvh] overflow-y-hidden overflow-x-scroll parent flex-row-reverse'
 			: 'flex-col overflow-x-hidden mt-20'
@@ -183,6 +184,7 @@
 					panel.headerForImage ? panel.headerForImage.Referer : refers[data.provider]
 				}"}`}
 				alt={panel.page}
+				loading="lazy"
 				on:error={(e) => {
 					// @ts-ignore
 					e.currentTarget.src = `https://m3u8-proxy-cors-alpha-two.vercel.app/cors?url=${

@@ -1,11 +1,13 @@
-import adapter from '@sveltejs/adapter-auto';
-import { vitePreprocess } from '@sveltejs/kit/vite';
+import adapter from '@sveltejs/adapter-vercel';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	preprocess: [vitePreprocess({})],
+	preprocess: [vitePreprocess()],
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({
+			runtime: "edge"
+		}),
 		alias: {
 			$: 'src'
 		},

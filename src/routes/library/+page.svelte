@@ -2,6 +2,7 @@
 	import type { LibraryRead } from '$/lib';
 	import axios from 'axios';
 	import { onMount } from 'svelte';
+	import { Skeleton } from '$lib/components/ui/skeleton';
 
 	let reads: LibraryRead[] = [];
 	onMount(() => {
@@ -20,15 +21,18 @@
 	<meta name="description" content="Continue reading from where you left." />
 </svelte:head>
 
-<section class="py-20 px-8 lg:px-40">
+<section class="py-20 px-6 lg:px-40">
 	<h1 class="text-2xl lg:text-3xl">Continue from where you left.</h1>
-	<div class="grid grid-cols-1 lg:grid-cols-5 gap-5 mt-10">
+	<div
+		class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5 mt-10"
+	>
 		{#each reads as read, index}
 			{#await axios.get(`https://manga-server.vercel.app/meta/anilist-manga/info/${read.id}?provider=${read.provider}`)}
-				<div class="w-full h-80 flex justify-center items-center bg-neutral-900 rounded">
-					<div
-						class="w-8 h-8 border-4 border-neutral-500 rounded-full border-t-current animate-spin text-neutral-900 absolute"
-					></div>
+				<div class="w-full flex flex-col gap-4 bg-neutral-900 p-4 rounded">
+					<Skeleton class="w-full aspect-[11/16] h-auto rounded" />
+					<Skeleton class="w-full h-4 lg:h-5 rounded" />
+					<Skeleton class="w-full h-8 lg:h-10 rounded" />
+					<Skeleton class="w-full h-8 lg:h-10 rounded" />
 				</div>
 			{:then value}
 				<div class="w-full flex flex-col gap-4 bg-neutral-900 p-4 rounded">
@@ -37,16 +41,22 @@
 						src={value.data.image}
 						alt={value.data.title.english ? value.data.title.english : value.data.title.romaji}
 					/>
-					<p class="text-2xl">
+					<a
+						href={`/${read.provider || 'mangahere'}/${read.id}`}
+						class="lg:text-xl block max-lg:text-center"
+					>
 						{value.data.title.english ? value.data.title.english : value.data.title.romaji}
-					</p>
+					</a>
 					<a
 						href={`/${read.provider}/${read.id}/${read.chapter}#page-${read.page}`}
-						class="block text-center bg-neutral-200 text-neutral-800 p-2 rounded-md line-clamp-1 whitespace-nowrap px-5 text-ellipsis font-medium"
+						class="block text-center bg-neutral-200 text-neutral-800 max-lg:text-sm p-2 rounded-md line-clamp-1 whitespace-nowrap px-5 text-ellipsis font-medium mt-auto"
 					>
-						Read {read.chapterTitle}
+						{read.chapterTitle}
 					</a>
-					<button on:click={() => handleRemove(index)} class="bg-red-600 p-2 rounded-md">
+					<button
+						on:click={() => handleRemove(index)}
+						class="bg-red-600 p-2 rounded-md max-lg:text-sm"
+					>
 						Remove
 					</button>
 				</div>
@@ -54,7 +64,7 @@
 				<p>Something went wrong: {error.message}</p>
 			{/await}
 		{:else}
-			<p>Nothing to show! Start reading right now.</p>
+			<p class="col-span-2">Nothing to show! Start reading right now.</p>
 		{/each}
 	</div>
 </section>

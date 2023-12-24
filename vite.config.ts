@@ -7,7 +7,6 @@ export default defineConfig({
 		sveltekit(),
 		SvelteKitPWA({
 			srcDir: './src',
-			scope: '/',
 			base: '/',
 			selfDestroying: process.env.SELF_DESTROYING_SW === 'true',
 			manifest: {

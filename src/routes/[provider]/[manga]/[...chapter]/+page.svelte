@@ -12,6 +12,7 @@
 	import { refers, type LibraryRead } from '$/lib';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Input } from '$/lib/components/ui/input';
+	import { cn } from '$/lib/utils';
 
 	export let data: PageData;
 
@@ -20,6 +21,7 @@
 	let showToolbar = true;
 	let timeoutId: NodeJS.Timeout;
 	let mode: 'horizontal' | 'vertical' = 'horizontal';
+	let isPWA = false;
 
 	function syncToLocal() {
 		const read = {
@@ -40,6 +42,7 @@
 	}
 
 	onMount(() => {
+		if (window.matchMedia('(display-mode: standalone)').matches) isPWA = true;
 		syncToLocal();
 		mode = (localStorage.getItem('read_mode') as 'horizontal' | 'vertical') ?? 'horizontal';
 		timeoutId = setTimeout(() => (showToolbar = false), 2000);
@@ -104,7 +107,7 @@
 	<meta name="description" content={`This page shows images of a chapter.`} />
 </svelte:head>
 
-<svelte:window on:keydown={handleKeyNavigation} />
+<svelte:window on:keydown|preventDefault={handleKeyNavigation} />
 
 <div
 	class={`max-lg:fixed max-lg:top-0 max-lg:w-full max-lg:py-2 max-lg:px-4 max-lg:justify-between bg-neutral-900 border-b border-neutral-300 flex items-center lg:justify-around lg:h-[5dvh] z-10 ${
@@ -168,16 +171,17 @@
 	{#each data.pages as panel, index}
 		<div
 			data-page={index + 1}
-			class={`shrink-0 flex justify-center w-screen ${
-				mode === 'horizontal' ? 'h-[100dvh] lg:h-[90dvh]' : ''
-			} child items-center relative page`}
+			class={cn(
+				'shrink-0 flex justify-center w-screen child items-center relative page',
+				mode === 'horizontal' && isPWA ? 'h-screen lg:h-[90dvh]' : 'h-[100dvh] lg:h-[90dvh]'
+			)}
 			id={`page-${index + 1}`}
 		>
 			<div
 				class="w-12 h-12 border-4 lg:border-[6px] border-neutral-500 rounded-full border-t-current animate-spin text-neutral-950 absolute z-[-1]"
 			></div>
 			<img
-				class="lg:h-[90dvh] lg:w-auto w-screen h-auto"
+				class="lg:h-[90dvh] lg:w-auto w-[200vw] h-auto"
 				src={`https://m3u8-proxy-cors-alpha-two.vercel.app/cors?url=${
 					panel.img
 				}&headers={"referer":"${

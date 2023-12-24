@@ -58,6 +58,7 @@
 		<div class="grid grid-cols-1 lg:grid-cols-4 gap-x-10 gap-y-4 mt-6">
 			{#each data.chapters as chapter, index}
 				<a
+					data-sveltekit-preload-data="tap"
 					href={`/${data.provider}/${data.id}/${chapter.id}`}
 					class="block py-3 px-4 bg-neutral-800 rounded-md">{index + 1}. {chapter.title}</a
 				>

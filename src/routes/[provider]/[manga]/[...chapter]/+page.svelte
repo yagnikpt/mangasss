@@ -91,8 +91,14 @@
 	}
 
 	function handleKeyNavigation(e: KeyboardEvent) {
-		if (e.key === 'ArrowRight') handlePrevPage();
-		if (e.key === 'ArrowLeft') handleNextPage();
+		if (e.key === 'ArrowRight') {
+			e.preventDefault();
+			handlePrevPage();
+		}
+		if (e.key === 'ArrowLeft') {
+			e.preventDefault();
+			handleNextPage();
+		}
 	}
 
 	function pageJump(event: KeyboardEvent & { currentTarget: HTMLInputElement }) {
@@ -107,7 +113,7 @@
 	<meta name="description" content={`This page shows images of a chapter.`} />
 </svelte:head>
 
-<svelte:window on:keydown|preventDefault={handleKeyNavigation} />
+<svelte:window on:keydown={handleKeyNavigation} />
 
 <div
 	class={`max-lg:fixed max-lg:top-0 max-lg:w-full max-lg:py-2 max-lg:px-4 max-lg:justify-between bg-neutral-900 border-b border-neutral-300 flex items-center lg:justify-around lg:h-[5dvh] z-10 ${

@@ -39,7 +39,6 @@
   "type": "module",
   "dependencies": {
     "@libsql/client": "^0.4.3",
-    "@lucia-auth/adapter-drizzle": "^1.0.1",
     "@lucia-auth/adapter-sqlite": "^3.0.0",
     "axios": "^1.6.7",
     "bits-ui": "^0.18.0",

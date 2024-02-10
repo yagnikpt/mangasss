@@ -1,11 +1,13 @@
 <script lang="ts">
-	import Input from '$/lib/components/ui/input/input.svelte';
+	import { Input } from '$/lib/components/ui/input';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import * as Select from '$lib/components/ui/select';
 	import { Github } from 'lucide-svelte';
 	import type { ActionData } from './$types';
 	import { onMount } from 'svelte';
 	import { providers } from '$/lib';
+	import { page } from '$app/stores';
+	import { enhance } from '$app/forms';
 
 	export let form: ActionData;
 
@@ -36,8 +38,11 @@
 	/>
 </svelte:head>
 
-<a href="/library" class="block px-4 py-2 text-sm bg-neutral-800 rounded-md absolute top-5 right-8"
-	>Library</a
+<a
+	href={$page.data.user ? '/library' : '/auth'}
+	class="block px-4 py-2 text-sm bg-neutral-800 rounded-md absolute top-5 right-8"
+>
+	{$page.data.user ? 'Library' : 'Login'}</a
 >
 <div class="flex flex-col items-center gap-8 max-w-lg w-full mx-auto px-8">
 	<h1 class="text-5xl lg:text-6xl font-medium" class:mt-40={!form} class:mt-20={!!form}>
@@ -71,7 +76,7 @@
 			</Select.Content>
 			<Select.Input name="favoriteFruit" />
 		</Select.Root>
-		<form id="search-form" class="w-full" method="post">
+		<form use:enhance id="search-form" class="w-full flex gap-3 items-center" method="post">
 			<Input
 				on:keydown={keydown}
 				name="search"
@@ -105,8 +110,8 @@
 							{item.type === 'MANGA'
 								? 'MANGA / MANHWA'
 								: item.type === 'ONE_SHOT'
-								  ? 'ONE SHOT'
-								  : item.type}
+									? 'ONE SHOT'
+									: item.type}
 						</p>
 					</div>
 				</a>
@@ -126,7 +131,7 @@
 				<div class="h-5 border border-neutral-400"></div>
 
 				<a aria-label="Github" target="_blank" href="https://github.com/yagnik-patel-47">
-					<Github class="w-5 h-5" />
+					<Github class="size-5" />
 				</a>
 			</div>
 		</div>

@@ -37,7 +37,7 @@ export default defineConfig({
 				]
 			},
 			devOptions: {
-				enabled: true,
+				enabled: false,
 				suppressWarnings: process.env.SUPPRESS_WARNING === 'true',
 				type: 'module',
 				navigateFallback: '/'

@@ -1,7 +1,19 @@
+import type { PageServerLoad } from './$types';
+import { db } from '$/lib/server/db';
 import axios from 'axios';
-import type { PageLoad } from './$types';
+import type { LibraryRead } from '$/lib';
 
-export const load: PageLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ locals, params }) => {
+	let reads: LibraryRead[] = [];
+	if (locals.user) {
+		const res = await db.query.user.findFirst({
+			columns: {
+				reads: true
+			},
+			where: (user, { eq }) => eq(user.id, locals.user?.id ?? '')
+		});
+		if (res?.reads) reads = res.reads;
+	}
 	const { data } = await axios.get(`https://manga-server.vercel.app/meta/anilist-manga/read`, {
 		params: { chapterId: `${params.chapter}`, provider: params.provider }
 	});
@@ -17,6 +29,7 @@ export const load: PageLoad = async ({ params }) => {
 		provider: params.provider,
 		chapter: params.chapter,
 		chapterTitle: chapters[currentChpIndex].title,
-		next: chapters[currentChpIndex + 1] ? chapters[currentChpIndex + 1] : null
+		next: chapters[currentChpIndex + 1] ? chapters[currentChpIndex + 1] : null,
+		reads
 	};
 };

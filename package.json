@@ -3,26 +3,27 @@
   "version": "0.0.1",
   "devDependencies": {
     "@fontsource-variable/rubik": "^5.0.20",
-    "@sveltejs/adapter-auto": "^3.0.1",
-    "@sveltejs/adapter-vercel": "^4.0.3",
-    "@sveltejs/kit": "^2.0.6",
-    "@sveltejs/vite-plugin-svelte": "^3.0.1",
+    "@sveltejs/adapter-auto": "^3.1.1",
+    "@sveltejs/adapter-vercel": "^5.1.0",
+    "@sveltejs/kit": "^2.5.0",
+    "@sveltejs/vite-plugin-svelte": "^3.0.2",
     "@types/cookie": "^0.6.0",
     "@vite-pwa/sveltekit": "^0.3.0",
-    "autoprefixer": "^10.4.16",
-    "clsx": "^2.0.0",
-    "postcss": "^8.4.32",
-    "postcss-load-config": "^5.0.2",
-    "prettier": "^3.1.1",
-    "prettier-plugin-tailwindcss": "^0.5.9",
-    "svelte": "^4.2.8",
-    "svelte-check": "^3.6.2",
-    "tailwind-merge": "^2.2.0",
-    "tailwind-variants": "^0.1.19",
-    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.17",
+    "clsx": "^2.1.0",
+    "drizzle-kit": "^0.20.14",
+    "postcss": "^8.4.35",
+    "postcss-load-config": "^5.0.3",
+    "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.11",
+    "svelte": "^4.2.10",
+    "svelte-check": "^3.6.4",
+    "tailwind-merge": "^2.2.1",
+    "tailwind-variants": "^0.1.20",
+    "tailwindcss": "^3.4.1",
     "tslib": "^2.6.2",
     "typescript": "^5.3.3",
-    "vite": "^5.0.10"
+    "vite": "^5.1.1"
   },
   "scripts": {
     "dev": "vite dev --host",
@@ -31,12 +32,20 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --check .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "db:push": "drizzle-kit push:sqlite --config=drizzle.config.ts",
+    "db:studio": "drizzle-kit studio"
   },
   "type": "module",
   "dependencies": {
-    "axios": "^1.6.2",
-    "bits-ui": "^0.11.8",
-    "lucide-svelte": "^0.300.0"
+    "@libsql/client": "^0.4.3",
+    "@lucia-auth/adapter-drizzle": "^1.0.1",
+    "@lucia-auth/adapter-sqlite": "^3.0.0",
+    "axios": "^1.6.7",
+    "bits-ui": "^0.18.0",
+    "drizzle-orm": "^0.29.3",
+    "lucia": "^3.0.1",
+    "lucide-svelte": "^0.323.0",
+    "oslo": "^1.1.0"
   }
 }

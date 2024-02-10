@@ -9,7 +9,7 @@
 		GalleryHorizontal
 	} from 'lucide-svelte';
 	import type { PageData } from './$types';
-	import { refers, type LibraryRead } from '$/lib';
+	import { refers } from '$/lib';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Input } from '$/lib/components/ui/input';
 	import { cn } from '$/lib/utils';
@@ -23,7 +23,7 @@
 	let mode: 'horizontal' | 'vertical' = 'horizontal';
 	let isPWA = false;
 
-	function syncToLocal() {
+	async function syncToLocal() {
 		const read = {
 			id: data.mangaId,
 			provider: data.provider,
@@ -31,14 +31,20 @@
 			chapterTitle: data.chapterTitle ?? '',
 			page: currentPage
 		};
-		let lib: LibraryRead[] = JSON.parse(localStorage.getItem('reads') ?? '[]');
+		let lib = data.reads;
 		const currentReadIndex = lib.findIndex((read) => read.id === data.mangaId);
 		if (currentReadIndex === -1) lib.unshift(read);
 		else {
 			lib = lib.filter((manga) => manga.id !== data.mangaId);
 			lib.unshift(read);
 		}
-		localStorage.setItem('reads', JSON.stringify(lib));
+		await fetch('/api/sync', {
+			method: 'POST',
+			body: JSON.stringify(lib),
+			headers: {
+				'content-type': 'application/json'
+			}
+		});
 	}
 
 	onMount(() => {

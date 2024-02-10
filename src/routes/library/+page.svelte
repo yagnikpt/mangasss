@@ -1,17 +1,23 @@
 <script lang="ts">
 	import type { LibraryRead } from '$/lib';
 	import axios from 'axios';
-	import { onMount } from 'svelte';
 	import { Skeleton } from '$lib/components/ui/skeleton';
+	import { enhance } from '$app/forms';
+	import type { PageData } from './$types';
 
-	let reads: LibraryRead[] = [];
-	onMount(() => {
-		reads = JSON.parse(localStorage.getItem('reads') ?? '[]');
-	});
+	export let data: PageData;
 
-	function handleRemove(index: number) {
+	let reads: LibraryRead[] = data.reads ?? [];
+
+	async function handleRemove(index: number) {
 		reads.splice(index, 1);
-		localStorage.setItem('reads', JSON.stringify(reads));
+		await fetch('/api/sync', {
+			method: 'POST',
+			body: JSON.stringify(reads),
+			headers: {
+				'content-type': 'application/json'
+			}
+		});
 		location.reload();
 	}
 </script>
@@ -21,8 +27,13 @@
 	<meta name="description" content="Continue reading from where you left." />
 </svelte:head>
 
-<section class="py-20 px-6 lg:px-40">
-	<h1 class="text-2xl lg:text-3xl">Continue from where you left.</h1>
+<section class="py-12 lg:py-20 px-6 lg:px-40">
+	<div class="flex justify-between items-center gap-3">
+		<h1 class="text-xl lg:text-3xl">Continue from where you left.</h1>
+		<form method="post" use:enhance>
+			<button class="px-4 py-2 text-sm bg-neutral-900 rounded-md">Logout</button>
+		</form>
+	</div>
 	<div
 		class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5 mt-10"
 	>

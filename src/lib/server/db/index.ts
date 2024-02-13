@@ -5,7 +5,8 @@ import * as schema from './schema';
 
 // NOTE: in production this should obviously be replaced with a turso instance
 export const libsqlClient = createClient({
-	url: env.PROD_DATABASE_URL
+	url: env.PROD_DATABASE_URL,
+	authToken: env.TURSO_TOKEN
 });
 
 export const db = drizzle(libsqlClient, { schema });

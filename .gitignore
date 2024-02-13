@@ -13,3 +13,4 @@ vite.config.ts.timestamp-*
 dev-dist
 .vscode
 local.db
+drizzle.config.ts

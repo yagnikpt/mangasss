@@ -1,7 +1,8 @@
 export const providers = [
 	{ value: 'mangadex', label: 'Mangadex (Manga + some Manhwa)' },
 	{ value: 'mangakakalot', label: 'Mangakakalot (Manga)' },
-	{ value: 'mangahere', label: 'Mangahere (Manga + Manhwa)' }
+	{ value: 'mangahere', label: 'Mangahere (Manga + Manhwa)' },
+	{ value: 'mangapill', label: 'Mangapill (?)' }
 ];
 export interface LibraryRead {
 	id: string;
@@ -13,5 +14,6 @@ export interface LibraryRead {
 export const refers: Record<string, string> = {
 	mangakakalot: 'https://mangakakalot.com',
 	mangadex: 'https://mangadex.org',
-	mangahere: 'https://www.mangahere.cc'
+	mangahere: 'https://www.mangahere.cc',
+	mangapill: 'https://mangapill.com'
 };

@@ -1,7 +1,14 @@
 <script lang="ts">
 	import { Input } from '$/lib/components/ui/input';
 	import { Skeleton } from '$lib/components/ui/skeleton';
-	import * as Select from '$lib/components/ui/select';
+	import {
+		Select,
+		SelectTrigger,
+		SelectValue,
+		SelectGroup,
+		SelectContent,
+		SelectItem
+	} from '$lib/components/ui/select';
 	import { Github } from 'lucide-svelte';
 	import type { ActionData } from './$types';
 	import { onMount } from 'svelte';
@@ -51,31 +58,30 @@
 	<p class="text-center">Here you'll find whatever fuckin manga you wanna read (maybe).</p>
 
 	<div class="w-full space-y-2">
-		<Select.Root
+		<Select
 			selected={readprovider
 				? providers[Number(localStorage.getItem('prefered_provider'))]
 				: undefined}
 			portal={null}
 		>
-			<Select.Trigger aria-label="Select a provider" class="w-full">
-				<Select.Value placeholder="Select a provider" />
-			</Select.Trigger>
-			<Select.Content>
-				<Select.Group>
+			<SelectTrigger aria-label="Select a provider" class="w-full">
+				<SelectValue placeholder="Select a provider" />
+			</SelectTrigger>
+			<SelectContent>
+				<SelectGroup>
 					{#each providers as provider, index}
-						<Select.Item
+						<SelectItem
 							on:click={() => {
 								readprovider = provider.value;
 								localStorage.setItem('prefered_provider', index.toString());
 							}}
 							value={provider.value}
-							label={provider.label}>{provider.label}</Select.Item
+							label={provider.label}>{provider.label}</SelectItem
 						>
 					{/each}
-				</Select.Group>
-			</Select.Content>
-			<Select.Input name="favoriteFruit" />
-		</Select.Root>
+				</SelectGroup>
+			</SelectContent>
+		</Select>
 		<form use:enhance id="search-form" class="w-full flex gap-3 items-center" method="post">
 			<Input
 				on:keydown={keydown}

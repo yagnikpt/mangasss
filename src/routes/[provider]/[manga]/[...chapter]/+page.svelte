@@ -18,7 +18,7 @@
 
 	$: providersIds = providers.map((p) => p.value).filter((p) => p !== data.provider);
 
-	let currentPage = 1;
+	let currentPage = [1, 1];
 	let popoverOpen = false;
 	let showToolbar = true;
 	let timeoutId: NodeJS.Timeout;
@@ -51,9 +51,12 @@
 
 	onMount(() => {
 		if (window.matchMedia('(display-mode: standalone)').matches) isPWA = true;
+
 		syncToLocal();
+
 		mode = (localStorage.getItem('read_mode') as 'horizontal' | 'vertical') ?? 'horizontal';
 		timeoutId = setTimeout(() => (showToolbar = false), 2000);
+
 		const observer = new IntersectionObserver(
 			(entries) => {
 				// console.clear();
@@ -69,6 +72,7 @@
 			},
 			{ threshold: 0.9 }
 		);
+
 		const pages = document.querySelectorAll('.page');
 		pages.forEach((page) => {
 			observer.observe(page);
@@ -88,9 +92,18 @@
 	}
 
 	function handleNextPage() {
+		const isLargeScreen = window.matchMedia('(min-width: 1024px)').matches;
 		const pages = document.querySelectorAll('.page');
-		if (currentPage === pages.length) document.querySelector('.end-page')?.scrollIntoView();
-		else pages[currentPage].scrollIntoView();
+		if (currentPage[1] === pages.length) document.querySelector('.end-page')?.scrollIntoView();
+		else {
+			if (currentPage[0] === currentPage[1]) {
+				pages[currentPage[0]].scrollIntoView();
+				pages[currentPage[0] + 1].scrollIntoView();
+			} else {
+				pages[currentPage[0]].scrollIntoView();
+				pages[currentPage[1]].scrollIntoView();
+			}
+		}
 	}
 
 	function handlePrevPage() {
@@ -114,6 +127,16 @@
 		if (event.key === 'Enter')
 			document.getElementById(`page-${event.currentTarget.value}`)?.scrollIntoView();
 	}
+
+	function groupIntoPairs<T>(arr: T[]): T[][] {
+		const pairs: T[][] = [];
+		for (let i = 0; i < arr.length; i += 2) {
+			pairs.push(arr.slice(i, i + 2));
+		}
+		return pairs;
+	}
+	const paired = groupIntoPairs(data.pages.slice(1));
+	console.log(paired);
 </script>
 
 <svelte:head>
@@ -201,8 +224,9 @@
 			<div
 				data-page={index + 1}
 				class={cn(
-					'shrink-0 flex justify-center w-screen child items-center relative page',
-					mode === 'horizontal' && isPWA ? 'h-screen lg:h-[90dvh]' : 'h-[100dvh] lg:h-[90dvh]'
+					'shrink-0 flex justify-center w-screen child items-center relative page max-md:!basis-full basis-1/2',
+					mode === 'horizontal' && isPWA ? 'h-screen lg:h-[90dvh]' : 'h-[100dvh] lg:h-[90dvh]',
+					index === 0 && '!basis-full'
 				)}
 				id={`page-${index + 1}`}
 			>

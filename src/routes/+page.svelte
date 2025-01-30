@@ -14,9 +14,9 @@
 	import { page } from '$app/stores';
 	import { enhance } from '$app/forms';
 
-	export let form
+	export let form;
 
-	let loading = false
+	let loading = false;
 
 	function keydown(event: KeyboardEvent) {
 		if (event.metaKey) return;
@@ -111,7 +111,7 @@
 		<div class="space-y-4 w-full mb-6">
 			{#each form.data as item}
 				<a
-					href={`/${readprovider || 'mangahere'}/${item.id}`}
+					href={`/${readprovider || 'mangapill'}/${item.id}`}
 					class="flex w-full pr-4 gap-8 hover:bg-neutral-800 rounded-md transition items-center justify-start"
 				>
 					<div class="relative shrink-0">

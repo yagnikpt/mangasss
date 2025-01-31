@@ -8,32 +8,33 @@
 		GalleryVertical,
 		GalleryHorizontal
 	} from 'lucide-svelte';
-	import type { PageData } from './$types';
+	import type { PageProps } from './$types';
 	import { providers, refers } from '$/lib';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Input } from '$/lib/components/ui/input';
 	import { cn } from '$/lib/utils';
+	import { page } from '$app/state';
 
-	export let data: PageData;
+	let { data }: PageProps = $props();
 
-	$: providersIds = providers.map((p) => p.value).filter((p) => p !== data.provider);
+	let providersIds = $derived(providers.map((p) => p.value).filter((p) => p !== data.provider));
 
-	let currentPage = [1, 1];
-	let popoverOpen = false;
-	let showToolbar = true;
+	let currentPage = $state(1);
+	let popoverOpen = $state(false);
+	let showToolbar = $state(true);
 	let timeoutId: NodeJS.Timeout;
-	let mode: 'horizontal' | 'vertical' = 'horizontal';
-	let isPWA = false;
+	let mode = $state<'horizontal' | 'vertical'>('horizontal');
+	let isPWA = $state(false);
 
-	async function syncToLocal() {
+	async function syncProgress() {
 		const read = {
 			id: data.mangaId!,
 			provider: data.provider!,
 			chapter: data.chapter!,
-			chapterTitle: data.chapterTitle ?? '',
+			chapterTitle: (await data.chapterInfo).title ?? '',
 			page: currentPage
 		};
-		let lib = data.reads;
+		let lib = await data.reads;
 		const currentReadIndex = lib?.findIndex((read) => read.id === data.mangaId);
 		if (currentReadIndex === -1) lib?.unshift(read);
 		else {
@@ -52,7 +53,7 @@
 	onMount(() => {
 		if (window.matchMedia('(display-mode: standalone)').matches) isPWA = true;
 
-		syncToLocal();
+		syncProgress();
 
 		mode = (localStorage.getItem('read_mode') as 'horizontal' | 'vertical') ?? 'horizontal';
 		timeoutId = setTimeout(() => (showToolbar = false), 2000);
@@ -66,7 +67,7 @@
 						const panels = document.querySelector('.panel__container');
 						panels?.children[currentPage]?.children[1]?.removeAttribute('loading');
 						panels?.children[currentPage + 1]?.children[1]?.removeAttribute('loading');
-						syncToLocal();
+						syncProgress();
 					}
 				});
 			},
@@ -92,18 +93,9 @@
 	}
 
 	function handleNextPage() {
-		const isLargeScreen = window.matchMedia('(min-width: 1024px)').matches;
 		const pages = document.querySelectorAll('.page');
-		if (currentPage[1] === pages.length) document.querySelector('.end-page')?.scrollIntoView();
-		else {
-			if (currentPage[0] === currentPage[1]) {
-				pages[currentPage[0]].scrollIntoView();
-				pages[currentPage[0] + 1].scrollIntoView();
-			} else {
-				pages[currentPage[0]].scrollIntoView();
-				pages[currentPage[1]].scrollIntoView();
-			}
-		}
+		if (currentPage === pages.length) document.querySelector('.end-page')?.scrollIntoView();
+		else pages[currentPage].scrollIntoView();
 	}
 
 	function handlePrevPage() {
@@ -128,15 +120,40 @@
 			document.getElementById(`page-${event.currentTarget.value}`)?.scrollIntoView();
 	}
 
-	function groupIntoPairs<T>(arr: T[]): T[][] {
-		const pairs: T[][] = [];
-		for (let i = 0; i < arr.length; i += 2) {
-			pairs.push(arr.slice(i, i + 2));
-		}
-		return pairs;
-	}
-	const paired = groupIntoPairs(data.pages.slice(1));
-	console.log(paired);
+	// function groupIntoPairs<T>(arr: T[]): T[][] {
+	// 	const pairs: T[][] = [];
+	// 	for (let i = 0; i < arr.length; i += 2) {
+	// 		pairs.push(arr.slice(i, i + 2));
+	// 	}
+	// 	return pairs;
+	// }
+
+	// function shiftToRight<T>(arr: T[][]): T[][] {
+	// 	const result: T[][] = [];
+	// 	const singles: T[][] = [];
+
+	// 	for (let i = 0; i < arr.length; i++) {
+	// 		if (arr[i].length === 2) {
+	// 			if (i === arr.length - 1) {
+	// 				singles.push([arr[i][1]]);
+	// 				singles.push([arr[i][0]]);
+	// 			} else {
+	// 				result.push([arr[i][0]]);
+	// 				if (i + 1 < arr.length) {
+	// 					result.push([arr[i][1], arr[i + 1][0]]);
+	// 					i++;
+	// 				}
+	// 			}
+	// 		} else {
+	// 			singles.push(arr[i]);
+	// 		}
+	// 	}
+
+	// 	return [...result, ...singles];
+	// }
+
+	// const paired = groupIntoPairs(data.pages.slice(1));
+	// const singles = data.pages.slice(1).map((page: any) => [page]);
 </script>
 
 <svelte:head>
@@ -144,9 +161,9 @@
 	<meta name="description" content={`This page shows images of a chapter.`} />
 </svelte:head>
 
-<svelte:window on:keydown={handleKeyNavigation} />
+<svelte:window onkeydown={handleKeyNavigation} />
 
-{#if data.error}
+{#if page.error}
 	<div class="flex flex-col items-center gap-5 mt-12">
 		<p class="text-3xl font-medium">
 			Can't open manga from {data.provider.charAt(0).toUpperCase() + data.provider.slice(1)} :(
@@ -154,7 +171,7 @@
 		<p class="text-2xl">Try using different provider.</p>
 		<div class="flex gap-3">
 			{#each providersIds as provider}
-				<a class="block px-4 py-2 bg-neutral-800 rounded-md" href={`/${provider}/${data.id}`}
+				<a class="block px-4 py-2 bg-neutral-800 rounded-md" href={`/${provider}/${data.mangaId}`}
 					>{provider.charAt(0).toUpperCase() + provider.slice(1)}</a
 				>
 			{/each}
@@ -173,14 +190,20 @@
 				<Popover.Trigger class="p-2">
 					<BookOpenText />
 				</Popover.Trigger>
-				<Popover.Content align="end" class="w-60 space-y-4">
+				<Popover.Content align="end" class="w-60">
 					<span>Jump to a page</span>
-					<Input on:keydown={pageJump} class="p-2" min={1} max={data.pages.length} type="number" />
+					<Input
+						onkeydown={pageJump}
+						class="p-2 mt-2"
+						min={1}
+						max={data.pages.length}
+						type="number"
+					/>
 				</Popover.Content>
 			</Popover.Root>
 			{#if mode === 'vertical'}
 				<button
-					on:click={() => {
+					onclick={() => {
 						mode = 'horizontal';
 						localStorage.setItem('read_mode', 'horizontal');
 					}}
@@ -191,7 +214,7 @@
 				</button>
 			{:else}
 				<button
-					on:click={() => {
+					onclick={() => {
 						mode = 'vertical';
 						localStorage.setItem('read_mode', 'vertical');
 					}}
@@ -217,80 +240,102 @@
 				? 'h-[100dvh] lg:h-[90dvh] overflow-y-hidden overflow-x-scroll parent flex-row-reverse'
 				: 'flex-col overflow-x-hidden mt-20'
 		}`}
-		on:click={handleToolbarToggle}
+		onclick={handleToolbarToggle}
 		role="presentation"
 	>
 		{#each data.pages as panel, index}
-			<div
-				data-page={index + 1}
-				class={cn(
-					'shrink-0 flex justify-center w-screen child items-center relative page max-md:!basis-full basis-1/2',
-					mode === 'horizontal' && isPWA ? 'h-screen lg:h-[90dvh]' : 'h-[100dvh] lg:h-[90dvh]',
-					index === 0 && '!basis-full'
-				)}
-				id={`page-${index + 1}`}
-			>
-				<div
-					class="w-12 h-12 border-4 lg:border-[6px] border-neutral-500 rounded-full border-t-current animate-spin text-neutral-950 absolute z-[-1]"
-				></div>
-				<img
-					class="lg:h-[90dvh] lg:w-auto w-[200vw] h-auto"
-					src={`https://m3u8-proxy-cors-alpha-two.vercel.app/cors?url=${
-						panel.img
-					}&headers={"referer":"${
-						panel.headerForImage ? panel.headerForImage.Referer : refers[data.provider]
-					}"}`}
-					alt={panel.page}
-					loading="lazy"
-					on:error={(e) => {
-						// @ts-ignore
-						e.currentTarget.src = `https://m3u8-proxy-cors-alpha-two.vercel.app/cors?url=${
-							panel.img
-						}&headers={"referer":"${
-							panel.headerForImage ? panel.headerForImage.Referer : refers[data.provider]
-						}"}`;
-					}}
-				/>
-			</div>
+			{@render panelView(panel, index)}
 		{/each}
-		{#if data.next}
+		{#await data.chapterInfo}
 			<div
 				class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
 			>
-				<p class="lg:text-lg">{data.next.title}</p>
-				<a
-					data-sveltekit-reload
-					href={`/${data.provider}/${data.mangaId}/${data.next.id}`}
-					class="block py-2 px-4 lg:text-lg bg-neutral-800 rounded-md">Read next chapter</a
-				>
+				<p>Loading...</p>
 			</div>
-		{:else}
+		{:then info}
+			{#if info.next}
+				<div
+					class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
+				>
+					<p class="lg:text-lg">{info.next.title}</p>
+					<a
+						data-sveltekit-reload
+						href={`/${data.provider}/${data.mangaId}/${info.next.id}`}
+						class="block py-2 px-4 lg:text-lg bg-neutral-800 rounded-md">Read next chapter</a
+					>
+				</div>
+			{:else}
+				<div
+					class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
+				>
+					<p>That was the latest chapter.</p>
+					<a
+						data-sveltekit-replacestate
+						href={`/`}
+						class="block py-2 px-4 bg-neutral-800 rounded-md">Home</a
+					>
+				</div>
+			{/if}
+		{:catch error}
 			<div
 				class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
 			>
-				<p>That was the latest chapter.</p>
+				<p>Failed to load chapter.</p>
 				<a data-sveltekit-replacestate href={`/`} class="block py-2 px-4 bg-neutral-800 rounded-md"
 					>Home</a
 				>
 			</div>
-		{/if}
+		{/await}
 	</div>
 	<div
 		class="max-lg:hidden bg-neutral-900 border-t border-neutral-300 flex items-center lg:justify-around lg:h-[5dvh] z-10"
 		class:lg:hidden={mode === 'vertical'}
 	>
-		<button on:click={handleNextPage} class="p-2 flex">
+		<button onclick={handleNextPage} class="p-2 flex">
 			<MoveLeft class="mr-2" /> Next
 		</button>
 		<button
 			disabled={currentPage === 1}
-			on:click={handlePrevPage}
+			onclick={handlePrevPage}
 			class="p-2 flex items-center disabled:opacity-30"
 		>
 			Prev <MoveRight class="ml-2" />
 		</button>
 	</div>
 {/if}
+
+{#snippet panelView(panel: any, index: number)}
+	<div
+		data-page={index + 1}
+		class={cn(
+			'shrink-0 flex justify-center w-screen child items-center relative page',
+			mode === 'horizontal' && isPWA ? 'h-screen lg:h-[90dvh]' : 'h-[100dvh] lg:h-[90dvh]'
+		)}
+		id={`page-${index + 1}`}
+	>
+		<div
+			class="w-12 h-12 border-4 lg:border-[6px] border-neutral-500 rounded-full border-t-current animate-spin text-neutral-950 absolute z-[-1]"
+		></div>
+		<img
+			class="lg:h-[90dvh] lg:w-auto w-[200vw] h-auto"
+			src={`https://m3u8-proxy-cors-alpha-two.vercel.app/cors?url=${
+				panel.img
+			}&headers={"referer":"${
+				panel.headerForImage ? panel.headerForImage.Referer : refers[data.provider]
+			}"}`}
+			alt={panel.page}
+			loading="lazy"
+			onerror={(e) => {
+				// @ts-ignore
+				e.currentTarget.src = `https://m3u8-proxy-cors-alpha-two.vercel.app/cors?url=${
+					panel.img
+				}&headers={"referer":"${
+					panel.headerForImage ? panel.headerForImage.Referer : refers[data.provider]
+				}"}`;
+			}}
+		/>
+	</div>
+{/snippet}
 
 <style>
 	.hide-scroll::-webkit-scrollbar {

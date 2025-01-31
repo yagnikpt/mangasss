@@ -1,22 +1,21 @@
 <script lang="ts">
 	import { Input } from '$/lib/components/ui/input';
 	import { Skeleton } from '$lib/components/ui/skeleton';
-	import {
-		Select,
-		SelectTrigger,
-		SelectValue,
-		SelectGroup,
-		SelectContent,
-		SelectItem
-	} from '$lib/components/ui/select';
+	import * as Select from '$lib/components/ui/select';
 	import { onMount } from 'svelte';
 	import { providers } from '$/lib';
-	import { page } from '$app/stores';
+	import { navigating, page } from '$app/state';
 	import { enhance } from '$app/forms';
+	import type { ActionData } from './$types';
+	import LoadingSpinner from '$/lib/components/loading-spinner.svelte';
 
-	export let form;
+	interface Props {
+		form: ActionData;
+	}
 
-	let loading = false;
+	let { form }: Props = $props();
+
+	let loading = $state(false);
 
 	function keydown(event: KeyboardEvent) {
 		if (event.metaKey) return;
@@ -27,11 +26,9 @@
 				?.dispatchEvent(new SubmitEvent('submit', { cancelable: true }));
 	}
 
-	let readprovider: string;
+	let readprovider: string = $state('');
 	onMount(() => {
-		readprovider = localStorage.getItem('prefered_provider')
-			? providers[Number(localStorage.getItem('prefered_provider'))].value
-			: '';
+		readprovider = localStorage.getItem('prefered_provider') ?? '';
 	});
 </script>
 
@@ -43,43 +40,47 @@
 	/>
 </svelte:head>
 
+{#if navigating.to?.route.id === '/[provider]/[manga]'}
+	<LoadingSpinner />
+{/if}
 <a
-	href={$page.data.user ? '/library' : '/auth'}
+	href={page.data.user ? '/library' : '/auth'}
 	class="block px-4 py-2 text-sm bg-neutral-800 rounded-md absolute top-5 right-8"
 >
-	{$page.data.user ? 'Library' : 'Login'}</a
+	{page.data.user ? 'Library' : 'Login'}</a
 >
 <div class="flex flex-col items-center gap-8 max-w-lg w-full mx-auto px-8">
-	<h1 class="text-5xl lg:text-6xl font-medium" class:mt-40={!form} class:mt-20={!!form}>
+	<h1
+		class="text-5xl lg:text-6xl font-medium transition-[margin]"
+		class:mt-40={!form && !loading}
+		class:mt-20={!!form || loading}
+	>
 		Mangasss
 	</h1>
 	<p class="text-center">Here you'll find whatever fuckin manga you wanna read (maybe).</p>
 
 	<div class="w-full space-y-2">
-		<Select
-			selected={readprovider
-				? providers[Number(localStorage.getItem('prefered_provider'))]
-				: undefined}
-			portal={null}
-		>
-			<SelectTrigger aria-label="Select a provider" class="w-full">
-				<SelectValue placeholder="Select a provider" />
-			</SelectTrigger>
-			<SelectContent>
-				<SelectGroup>
+		<Select.Root type="single" bind:value={readprovider}>
+			<Select.Trigger aria-label="Select a provider" class="w-full">
+				{readprovider !== ''
+					? providers.filter((v) => v.value === readprovider)[0].label
+					: 'Select a provider'}
+			</Select.Trigger>
+			<Select.Content>
+				<Select.Group>
 					{#each providers as provider, index}
-						<SelectItem
-							on:click={() => {
+						<Select.Item
+							onclick={() => {
 								readprovider = provider.value;
-								localStorage.setItem('prefered_provider', index.toString());
+								localStorage.setItem('prefered_provider', readprovider);
 							}}
 							value={provider.value}
-							label={provider.label}>{provider.label}</SelectItem
+							label={provider.label}>{provider.label}</Select.Item
 						>
 					{/each}
-				</SelectGroup>
-			</SelectContent>
-		</Select>
+				</Select.Group>
+			</Select.Content>
+		</Select.Root>
 		<form
 			use:enhance={() => {
 				loading = true;
@@ -94,7 +95,7 @@
 			method="post"
 		>
 			<Input
-				on:keydown={keydown}
+				onkeydown={keydown}
 				name="search"
 				placeholder="Type a manga to search..."
 				type="search"
@@ -104,7 +105,17 @@
 	</div>
 
 	{#if loading}
-		<div class="flex w-full justify-center mt-20">Loading...</div>
+		<div class="space-y-4 w-full mb-6">
+			{#each Array.from({ length: 2 })}
+				<div class="flex w-full pr-4 gap-8 items-center justify-start">
+					<Skeleton class="w-20 aspect-10/16 rounded-md" />
+					<div class="space-y-2">
+						<Skeleton class="w-40 h-6 rounded-md" />
+						<Skeleton class="w-20 h-4 rounded-md" />
+					</div>
+				</div>
+			{/each}
+		</div>
 	{/if}
 
 	{#if form && !loading}
@@ -116,7 +127,7 @@
 				>
 					<div class="relative shrink-0">
 						<img
-							class="w-20 aspect-[10/16] object-cover rounded-md"
+							class="w-20 aspect-10/16 object-cover rounded-md"
 							src={item.image}
 							alt={item.title.english ? item.title.english : item.title.romaji}
 						/>
@@ -141,7 +152,7 @@
 		</div>
 	{/if}
 
-	{#if !form}
+	{#if !form && !loading}
 		<div class="fixed bottom-10">
 			<div class="flex gap-2 items-center">
 				<span class="text-sm">Made by</span>

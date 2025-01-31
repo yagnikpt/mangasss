@@ -4,8 +4,14 @@
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { enhance } from '$app/forms';
 	import type { PageData } from './$types';
+	import { navigating } from '$app/state';
+	import LoadingSpinner from '$/lib/components/loading-spinner.svelte';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 
 	let reads: LibraryRead[] = data.reads ?? [];
 
@@ -27,6 +33,9 @@
 	<meta name="description" content="Continue reading from where you left." />
 </svelte:head>
 
+{#if navigating.to?.route.id === '/[provider]/[manga]/[...chapter]' || navigating.to?.route.id === '/[provider]/[manga]'}
+	<LoadingSpinner />
+{/if}
 <section class="py-12 lg:py-20 px-6 lg:px-40">
 	<div class="flex justify-between items-center gap-3">
 		<h1 class="text-xl lg:text-3xl">Continue from where you left.</h1>
@@ -40,7 +49,7 @@
 		{#each reads as read, index}
 			{#await axios.get(`https://manga-server.vercel.app/meta/anilist-manga/info/${read.id}?provider=${read.provider}`)}
 				<div class="w-full flex flex-col gap-4 bg-neutral-900 p-4 rounded">
-					<Skeleton class="w-full aspect-[11/16] h-auto rounded" />
+					<Skeleton class="w-full aspect-11/16 h-auto rounded" />
 					<Skeleton class="w-full h-4 lg:h-5 rounded" />
 					<Skeleton class="w-full h-8 lg:h-10 rounded" />
 					<Skeleton class="w-full h-8 lg:h-10 rounded" />
@@ -48,7 +57,7 @@
 			{:then value}
 				<div class="w-full flex flex-col gap-4 bg-neutral-900 p-4 rounded">
 					<img
-						class="object-cover aspect-[11/16] rounded"
+						class="object-cover aspect-11/16 rounded"
 						src={value.data.image}
 						alt={value.data.title.english ? value.data.title.english : value.data.title.romaji}
 					/>
@@ -65,7 +74,7 @@
 						{read.chapterTitle}
 					</a>
 					<button
-						on:click={() => handleRemove(index)}
+						onclick={() => handleRemove(index)}
 						class="bg-red-600 p-2 rounded-md max-lg:text-sm"
 					>
 						Remove

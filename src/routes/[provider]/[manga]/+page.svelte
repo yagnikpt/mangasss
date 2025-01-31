@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { X } from 'lucide-svelte';
 	import { providers } from '$/lib';
-	import type { PageData } from './$types';
-	export let data: PageData;
-	$: providersIds = providers.map((p) => p.value).filter((p) => p !== data.provider);
+	import type { PageProps } from './$types';
+	import { navigating } from '$app/state';
+	import LoadingSpinner from '$/lib/components/loading-spinner.svelte';
+
+	let { data }: PageProps = $props();
+	let providersIds = $derived(providers.map((p) => p.value).filter((p) => p !== data.provider));
 </script>
 
 <svelte:head>
@@ -21,6 +24,9 @@
 		} manga.`}
 	/>
 </svelte:head>
+{#if !!navigating.type}
+	<LoadingSpinner />
+{/if}
 <section class="py-20 px-8 lg:px-40">
 	<a href="/" class="block p-2 absolute top-4 right-8 lg:right-40">
 		<X class="w-7 h-7" />
@@ -28,7 +34,7 @@
 	{#if !data.error}
 		<div class="flex gap-10 lg:gap-16 lg:items-center max-lg:flex-col">
 			<img
-				class="w-40 lg:w-60 object-cover aspect-[11/16] rounded"
+				class="w-40 lg:w-60 object-cover aspect-11/16 rounded"
 				src={data.image}
 				alt={data.title.english ? data.title.english : data.title.romaji}
 			/>

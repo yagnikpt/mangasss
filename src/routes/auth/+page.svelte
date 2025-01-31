@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { Input } from '$lib/components/ui/input';
-	export let form;
+	interface Props {
+		form: any;
+	}
+
+	let { form }: Props = $props();
 </script>
 
 <svelte:head>
@@ -10,7 +14,7 @@
 </svelte:head>
 
 <main class="h-dvh flex justify-center items-center">
-	<div class="mt-7 rounded-xl shadow-sm bg-neutral-800 border-gray-700 w-full max-w-sm mx-auto">
+	<div class="mt-7 rounded-xl shadow-xs bg-neutral-800 border-gray-700 w-full max-w-sm mx-auto">
 		<div class="p-4 sm:p-7">
 			<div class="text-center">
 				<h1 class="block text-2xl font-bold text-white">Sign in / Sign up</h1>

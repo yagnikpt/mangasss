@@ -8,7 +8,10 @@ declare global {
 	declare const __RELOAD_SW__: boolean;
 	namespace App {
 		// interface Locals {}
-		// interface Error {}
+		interface Error {
+			provider: string;
+			mangaId: string;
+		}
 		// interface PageData {}
 		// interface Platform {}
 		interface Locals {
@@ -18,4 +21,4 @@ declare global {
 	}
 }
 
-export {};
+export { };

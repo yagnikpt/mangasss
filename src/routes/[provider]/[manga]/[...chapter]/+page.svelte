@@ -9,15 +9,12 @@
 		GalleryHorizontal
 	} from 'lucide-svelte';
 	import type { PageProps } from './$types';
-	import { providers, refers } from '$/lib';
+	import { refers } from '$/lib';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Input } from '$/lib/components/ui/input';
 	import { cn } from '$/lib/utils';
-	import { page } from '$app/state';
 
 	let { data }: PageProps = $props();
-
-	let providersIds = $derived(providers.map((p) => p.value).filter((p) => p !== data.provider));
 
 	let currentPage = $state(1);
 	let popoverOpen = $state(false);
@@ -163,146 +160,128 @@
 
 <svelte:window onkeydown={handleKeyNavigation} />
 
-{#if page.error}
-	<div class="flex flex-col items-center gap-5 mt-12">
-		<p class="text-3xl font-medium">
-			Can't open manga from {data.provider.charAt(0).toUpperCase() + data.provider.slice(1)} :(
-		</p>
-		<p class="text-2xl">Try using different provider.</p>
-		<div class="flex gap-3">
-			{#each providersIds as provider}
-				<a class="block px-4 py-2 bg-neutral-800 rounded-md" href={`/${provider}/${data.mangaId}`}
-					>{provider.charAt(0).toUpperCase() + provider.slice(1)}</a
-				>
-			{/each}
-		</div>
-	</div>
-{:else}
-	<div
-		class={`max-lg:fixed max-lg:top-0 max-lg:w-full max-lg:py-2 max-lg:px-4 max-lg:justify-between bg-neutral-900 border-b border-neutral-300 flex items-center lg:justify-around lg:h-[5dvh] z-10 ${
-			mode === 'vertical' ? 'fixed top-0 w-full py-2 px-4' : ''
-		}`}
-		class:max-lg:hidden={!showToolbar}
-	>
-		<span>{currentPage}/{data.pages.length}</span>
-		<div class="flex items-center gap-2">
-			<Popover.Root onOpenChange={(state) => (popoverOpen = state)}>
-				<Popover.Trigger class="p-2">
-					<BookOpenText />
-				</Popover.Trigger>
-				<Popover.Content align="end" class="w-60">
-					<span>Jump to a page</span>
-					<Input
-						onkeydown={pageJump}
-						class="p-2 mt-2"
-						min={1}
-						max={data.pages.length}
-						type="number"
-					/>
-				</Popover.Content>
-			</Popover.Root>
-			{#if mode === 'vertical'}
-				<button
-					onclick={() => {
-						mode = 'horizontal';
-						localStorage.setItem('read_mode', 'horizontal');
-					}}
-					aria-label="Read horizontal"
-					class="p-2"
-				>
-					<GalleryHorizontal />
-				</button>
-			{:else}
-				<button
-					onclick={() => {
-						mode = 'vertical';
-						localStorage.setItem('read_mode', 'vertical');
-					}}
-					class="p-2"
-					aria-label="Read verticle"
-				>
-					<GalleryVertical />
-				</button>
-			{/if}
-			<a
-				href={`/${data.provider}/${data.mangaId}`}
-				data-sveltekit-replacestate
-				aria-label="Close"
-				class="p-2 block"
+<div
+	class={`max-lg:fixed max-lg:top-0 max-lg:w-full max-lg:py-2 max-lg:px-4 max-lg:justify-between bg-neutral-900 border-b border-neutral-300 flex items-center lg:justify-around lg:h-[5dvh] z-10 ${
+		mode === 'vertical' ? 'fixed top-0 w-full py-2 px-4' : ''
+	}`}
+	class:max-lg:hidden={!showToolbar}
+>
+	<span>{currentPage}/{data.pages.length}</span>
+	<div class="flex items-center gap-2">
+		<Popover.Root onOpenChange={(state) => (popoverOpen = state)}>
+			<Popover.Trigger class="p-2">
+				<BookOpenText />
+			</Popover.Trigger>
+			<Popover.Content align="end" class="w-60">
+				<span>Jump to a page</span>
+				<Input
+					onkeydown={pageJump}
+					class="p-2 mt-2"
+					min={1}
+					max={data.pages.length}
+					type="number"
+				/>
+			</Popover.Content>
+		</Popover.Root>
+		{#if mode === 'vertical'}
+			<button
+				onclick={() => {
+					mode = 'horizontal';
+					localStorage.setItem('read_mode', 'horizontal');
+				}}
+				aria-label="Read horizontal"
+				class="p-2"
 			>
-				<X />
-			</a>
-		</div>
+				<GalleryHorizontal />
+			</button>
+		{:else}
+			<button
+				onclick={() => {
+					mode = 'vertical';
+					localStorage.setItem('read_mode', 'vertical');
+				}}
+				class="p-2"
+				aria-label="Read verticle"
+			>
+				<GalleryVertical />
+			</button>
+		{/if}
+		<a
+			href={`/${data.provider}/${data.mangaId}`}
+			data-sveltekit-replacestate
+			aria-label="Close"
+			class="p-2 block"
+		>
+			<X />
+		</a>
 	</div>
-	<div
-		class={`flex panel__container hide-scroll ${
-			mode === 'horizontal'
-				? 'h-[100dvh] lg:h-[90dvh] overflow-y-hidden overflow-x-scroll parent flex-row-reverse'
-				: 'flex-col overflow-x-hidden mt-20'
-		}`}
-		onclick={handleToolbarToggle}
-		role="presentation"
-	>
-		{#each data.pages as panel, index}
-			{@render panelView(panel, index)}
-		{/each}
-		{#await data.chapterInfo}
+</div>
+<div
+	class={`flex panel__container hide-scroll ${
+		mode === 'horizontal'
+			? 'h-[100dvh] lg:h-[90dvh] overflow-y-hidden overflow-x-scroll parent flex-row-reverse'
+			: 'flex-col overflow-x-hidden mt-20'
+	}`}
+	onclick={handleToolbarToggle}
+	role="presentation"
+>
+	{#each data.pages as panel, index}
+		{@render panelView(panel, index)}
+	{/each}
+	{#await data.chapterInfo}
+		<div
+			class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
+		>
+			<p>Loading...</p>
+		</div>
+	{:then info}
+		{#if info.next}
 			<div
 				class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
 			>
-				<p>Loading...</p>
+				<p class="lg:text-lg">{info.next.title}</p>
+				<a
+					data-sveltekit-reload
+					href={`/${data.provider}/${data.mangaId}/${info.next.id}`}
+					class="block py-2 px-4 lg:text-lg bg-neutral-800 rounded-md">Read next chapter</a
+				>
 			</div>
-		{:then info}
-			{#if info.next}
-				<div
-					class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
-				>
-					<p class="lg:text-lg">{info.next.title}</p>
-					<a
-						data-sveltekit-reload
-						href={`/${data.provider}/${data.mangaId}/${info.next.id}`}
-						class="block py-2 px-4 lg:text-lg bg-neutral-800 rounded-md">Read next chapter</a
-					>
-				</div>
-			{:else}
-				<div
-					class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
-				>
-					<p>That was the latest chapter.</p>
-					<a
-						data-sveltekit-replacestate
-						href={`/`}
-						class="block py-2 px-4 bg-neutral-800 rounded-md">Home</a
-					>
-				</div>
-			{/if}
-		{:catch error}
+		{:else}
 			<div
 				class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
 			>
-				<p>Failed to load chapter.</p>
+				<p>That was the latest chapter.</p>
 				<a data-sveltekit-replacestate href={`/`} class="block py-2 px-4 bg-neutral-800 rounded-md"
 					>Home</a
 				>
 			</div>
-		{/await}
-	</div>
-	<div
-		class="max-lg:hidden bg-neutral-900 border-t border-neutral-300 flex items-center lg:justify-around lg:h-[5dvh] z-10"
-		class:lg:hidden={mode === 'vertical'}
-	>
-		<button onclick={handleNextPage} class="p-2 flex">
-			<MoveLeft class="mr-2" /> Next
-		</button>
-		<button
-			disabled={currentPage === 1}
-			onclick={handlePrevPage}
-			class="p-2 flex items-center disabled:opacity-30"
+		{/if}
+	{:catch error}
+		<div
+			class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
 		>
-			Prev <MoveRight class="ml-2" />
-		</button>
-	</div>
-{/if}
+			<p>Failed to load chapter.</p>
+			<a data-sveltekit-replacestate href={`/`} class="block py-2 px-4 bg-neutral-800 rounded-md"
+				>Home</a
+			>
+		</div>
+	{/await}
+</div>
+<div
+	class="max-lg:hidden bg-neutral-900 border-t border-neutral-300 flex items-center lg:justify-around lg:h-[5dvh] z-10"
+	class:lg:hidden={mode === 'vertical'}
+>
+	<button onclick={handleNextPage} class="p-2 flex">
+		<MoveLeft class="mr-2" /> Next
+	</button>
+	<button
+		disabled={currentPage === 1}
+		onclick={handlePrevPage}
+		class="p-2 flex items-center disabled:opacity-30"
+	>
+		Prev <MoveRight class="ml-2" />
+	</button>
+</div>
 
 {#snippet panelView(panel: any, index: number)}
 	<div

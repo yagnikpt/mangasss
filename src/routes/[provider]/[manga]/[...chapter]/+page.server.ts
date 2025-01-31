@@ -25,12 +25,14 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 				const errorObj: any = e.toJSON();
 				error(errorObj.status, {
 					message: e.message,
-					// provider: params.provider,
-					// id: params.manga
+					provider: params.provider,
+					mangaId: params.manga
 				})
 			}
 			error(500, {
-				message: 'Server Error'
+				message: 'Server Error',
+				provider: params.provider,
+				mangaId: params.manga
 			})
 		}
 	}
@@ -48,12 +50,14 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 				const errorObj: any = e.toJSON();
 				error(errorObj.status, {
 					message: e.message,
-					// provider: params.provider,
-					// id: params.manga
+					provider: params.provider,
+					mangaId: params.manga
 				})
 			}
 			error(500, {
-				message: 'Server Error'
+				message: 'Server Error',
+				provider: params.provider,
+				mangaId: params.manga
 			})
 		}
 	}

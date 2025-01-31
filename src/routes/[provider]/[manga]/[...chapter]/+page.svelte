@@ -309,7 +309,13 @@
 		data-page={index + 1}
 		class={cn(
 			'shrink-0 flex justify-center w-screen child items-center relative page',
-			mode === 'horizontal' && isPWA ? 'h-screen lg:h-[90dvh]' : 'h-[100dvh] lg:h-[90dvh]'
+			mode === 'horizontal'
+				? isPWA
+					? 'h-screen lg:h-[90dvh]'
+					: 'h-dvh lg:h-[90dvh]'
+				: isPWA
+					? 'min-h-screen lg:min-h-[90dvh]'
+					: 'min-h-dvh lg:min-h-[90dvh]'
 		)}
 		id={`page-${index + 1}`}
 	>

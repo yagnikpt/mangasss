@@ -17,13 +17,15 @@
 
 	let loading = $state(false);
 
-	function keydown(event: KeyboardEvent) {
+	function keydown(event: KeyboardEvent & { currentTarget: HTMLInputElement }) {
 		if (event.metaKey) return;
 
-		if (event.key === 'Enter')
+		if (event.key === 'Enter') {
 			document
 				.querySelector(`#search-form`)
 				?.dispatchEvent(new SubmitEvent('submit', { cancelable: true }));
+			event.currentTarget.blur();
+		}
 	}
 
 	let readprovider: string = $state('');

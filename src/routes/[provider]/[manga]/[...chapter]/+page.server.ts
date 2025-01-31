@@ -3,7 +3,7 @@ import { db } from '$/lib/server/db';
 import axios, { AxiosError } from 'axios';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ locals, params, fetch }) => {
+export const load: PageServerLoad = async ({ locals, params }) => {
 	async function getUserReads() {
 		if (!locals.user) return [];
 		const res = await db.query.user.findFirst({

@@ -12,6 +12,7 @@
 	import { refers } from '$/lib';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Input } from '$/lib/components/ui/input';
+	import { Slider } from '$/lib/components/ui/slider';
 	import { cn } from '$/lib/utils';
 
 	let { data }: PageProps = $props();
@@ -91,13 +92,14 @@
 
 	function handleNextPage() {
 		const pages = document.querySelectorAll('.page');
-		if (currentPage === pages.length) document.querySelector('.end-page')?.scrollIntoView();
-		else pages[currentPage].scrollIntoView();
+		if (currentPage === pages.length)
+			document.querySelector('.end-page')?.scrollIntoView({ behavior: 'instant' });
+		else pages[currentPage].scrollIntoView({ behavior: 'instant' });
 	}
 
 	function handlePrevPage() {
 		const pages = document.querySelectorAll('.page');
-		pages[currentPage - 2].scrollIntoView();
+		if (currentPage !== 1) pages[currentPage - 2].scrollIntoView({ behavior: 'instant' });
 	}
 
 	function handleKeyNavigation(e: KeyboardEvent) {
@@ -114,43 +116,10 @@
 	function pageJump(event: KeyboardEvent & { currentTarget: HTMLInputElement }) {
 		if (event.metaKey) return;
 		if (event.key === 'Enter')
-			document.getElementById(`page-${event.currentTarget.value}`)?.scrollIntoView();
+			document
+				.getElementById(`page-${event.currentTarget.value}`)
+				?.scrollIntoView({ behavior: 'instant' });
 	}
-
-	// function groupIntoPairs<T>(arr: T[]): T[][] {
-	// 	const pairs: T[][] = [];
-	// 	for (let i = 0; i < arr.length; i += 2) {
-	// 		pairs.push(arr.slice(i, i + 2));
-	// 	}
-	// 	return pairs;
-	// }
-
-	// function shiftToRight<T>(arr: T[][]): T[][] {
-	// 	const result: T[][] = [];
-	// 	const singles: T[][] = [];
-
-	// 	for (let i = 0; i < arr.length; i++) {
-	// 		if (arr[i].length === 2) {
-	// 			if (i === arr.length - 1) {
-	// 				singles.push([arr[i][1]]);
-	// 				singles.push([arr[i][0]]);
-	// 			} else {
-	// 				result.push([arr[i][0]]);
-	// 				if (i + 1 < arr.length) {
-	// 					result.push([arr[i][1], arr[i + 1][0]]);
-	// 					i++;
-	// 				}
-	// 			}
-	// 		} else {
-	// 			singles.push(arr[i]);
-	// 		}
-	// 	}
-
-	// 	return [...result, ...singles];
-	// }
-
-	// const paired = groupIntoPairs(data.pages.slice(1));
-	// const singles = data.pages.slice(1).map((page: any) => [page]);
 </script>
 
 <svelte:head>
@@ -159,12 +128,12 @@
 </svelte:head>
 
 <svelte:window onkeydown={handleKeyNavigation} />
-
 <div
-	class={`max-lg:fixed max-lg:top-0 max-lg:w-full max-lg:py-2 max-lg:px-4 max-lg:justify-between bg-neutral-900 border-b border-neutral-300 flex items-center lg:justify-around lg:h-[5dvh] z-10 ${
-		mode === 'vertical' ? 'fixed top-0 w-full py-2 px-4' : ''
-	}`}
-	class:max-lg:hidden={!showToolbar}
+	class={cn(
+		'max-lg:fixed max-lg:top-0 max-lg:w-full max-lg:py-2 max-lg:px-4 max-lg:justify-between bg-neutral-900 border-b border-neutral-300 flex items-center lg:justify-around lg:h-[5dvh] z-10',
+		mode === 'vertical' && 'fixed top-0 w-full py-2 px-4',
+		!showToolbar && 'max-lg:hidden'
+	)}
 >
 	<span>{currentPage}/{data.pages.length}</span>
 	<div class="flex items-center gap-2">
@@ -281,6 +250,28 @@
 	>
 		Prev <MoveRight class="ml-2" />
 	</button>
+</div>
+<div
+	class={cn(
+		'lg:hidden fixed bottom-0 border-t w-full border-neutral-300 pt-6 pb-2 px-4 bg-neutral-900 flex-col gap-4',
+		mode === 'horizontal' && showToolbar ? 'max-lg:flex' : 'hidden'
+	)}
+>
+	<Slider
+		class="!w-4/6 mx-auto"
+		type="single"
+		bind:value={currentPage}
+		max={data.pages.length}
+		step={1}
+		dir="rtl"
+		onValueCommit={(v) => {
+			document.getElementById(`page-${v}`)?.scrollIntoView({ behavior: 'instant' });
+		}}
+	/>
+	<div class="flex w-full items-center justify-between">
+		<img class="w-24" aria-hidden="true" src="/read_left_arrow.webp" alt="read left side image" />
+		<p>{data.pages.length - currentPage} Left</p>
+	</div>
 </div>
 
 {#snippet panelView(panel: any, index: number)}

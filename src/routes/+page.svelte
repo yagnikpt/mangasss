@@ -102,6 +102,7 @@
 				placeholder="Type a manga to search..."
 				type="search"
 				required
+				defaultValue={form?.fieldValue ?? ''}
 			/>
 		</form>
 	</div>

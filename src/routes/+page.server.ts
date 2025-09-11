@@ -21,7 +21,7 @@ export const actions = {
 				data: data.results,
 				fieldValue: form.get('search')!.toString()
 			};
-		} catch (err) {
+		} catch (_) {
 			return {
 				data: [],
 				fieldValue: form.get('search')!.toString()

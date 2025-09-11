@@ -1,6 +1,5 @@
 export const providers = [
 	{ value: 'mangadex', label: 'Mangadex (Manga + some Manhwa)' },
-	{ value: 'mangakakalot', label: 'Mangakakalot (Manga)' },
 	{ value: 'mangahere', label: 'Mangahere (Manga + Manhwa)' },
 	{ value: 'mangapill', label: 'Mangapill (?)' }
 ];

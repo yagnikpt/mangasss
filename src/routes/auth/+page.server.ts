@@ -40,7 +40,7 @@ export const actions = {
 				path: '.',
 				...sessionCookie.attributes
 			});
-		} catch (e) {
+		} catch (_) {
 			return fail(500, {
 				message: 'An unknown error occurred'
 			});

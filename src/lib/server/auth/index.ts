@@ -3,9 +3,10 @@ import { LibSQLAdapter } from '@lucia-auth/adapter-sqlite';
 import { libsqlClient } from '../db';
 import { dev } from '$app/environment';
 import type { LibraryRead } from '$/lib';
+import type { Client } from '@libsql/client';
 
 export const lucia = new Lucia(
-	new LibSQLAdapter(libsqlClient, {
+	new LibSQLAdapter(libsqlClient as Client, {
 		user: 'user',
 		session: 'session'
 	}),

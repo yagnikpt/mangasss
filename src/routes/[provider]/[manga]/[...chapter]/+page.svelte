@@ -25,9 +25,9 @@
 
   async function syncProgress() {
     const read = {
-      id: data.mangaId!,
-      provider: data.provider!,
-      chapter: data.chapter!,
+      id: data.mangaId,
+      provider: data.provider,
+      chapter: data.chapter,
       chapterTitle: (await data.chapterInfo).title ?? '',
       page: currentPage,
     }
@@ -200,7 +200,7 @@
 <div
   class={`flex panel__container hide-scroll ${
     mode === 'horizontal'
-      ? 'h-[100dvh] lg:h-[90dvh] overflow-y-hidden overflow-x-scroll parent flex-row-reverse'
+      ? 'h-dvh lg:h-[90dvh] overflow-y-hidden overflow-x-scroll parent flex-row-reverse'
       : 'flex-col overflow-x-hidden mt-20'
   }`}
   onclick={handleToolbarToggle}
@@ -211,14 +211,14 @@
   {/each}
   {#await data.chapterInfo}
     <div
-      class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
+      class="shrink-0 flex flex-col gap-4 justify-center w-screen h-dvh child items-center end-page"
     >
       <p>Loading...</p>
     </div>
   {:then info}
     {#if info.next}
       <div
-        class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
+        class="shrink-0 flex flex-col gap-4 justify-center w-screen h-dvh child items-center end-page"
       >
         <p class="lg:text-lg">{info.next.title}</p>
         <a
@@ -230,7 +230,7 @@
       </div>
     {:else}
       <div
-        class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
+        class="shrink-0 flex flex-col gap-4 justify-center w-screen h-dvh child items-center end-page"
       >
         <p>That was the latest chapter.</p>
         <a
@@ -242,7 +242,7 @@
     {/if}
   {:catch error}
     <div
-      class="shrink-0 flex flex-col gap-4 justify-center w-screen h-[100dvh] child items-center end-page"
+      class="shrink-0 flex flex-col gap-4 justify-center w-screen h-dvh child items-center end-page"
     >
       <p>Failed to load chapter.</p>
       <a
@@ -275,7 +275,7 @@
   )}
 >
   <Slider
-    class="!w-4/6 mx-auto"
+    class="w-4/6! mx-auto"
     type="single"
     bind:value={currentPage}
     max={data.pages.length}

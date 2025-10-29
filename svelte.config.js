@@ -1,4 +1,4 @@
-import adapter from "@sveltejs/adapter-node";
+import adapter from "@sveltejs/adapter-vercel";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -10,7 +10,9 @@ const config = {
 			$: "src",
 		},
 		csrf: {
-			trustedOrigins: ["http://localhost:5173", "http://localhost:4173", "http://localhost:3000"],
+			trustedOrigins: [
+				"http://localhost:3000",
+			],
 		},
 		serviceWorker: {
 			register: false,

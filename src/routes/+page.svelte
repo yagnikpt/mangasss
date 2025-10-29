@@ -28,7 +28,7 @@
     }
   }
 
-  let readprovider: string = $state('')
+  let readprovider = $state('')
   onMount(() => {
     readprovider = localStorage.getItem('prefered_provider') ?? ''
   })
